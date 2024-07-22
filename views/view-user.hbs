@@ -1,0 +1,66 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/user">Usuário</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Ver Usuário</li>
+  </ol>
+</nav>
+
+<div class="view-user p-12">
+  {{#each rows}}
+  <div class="row mb-5">
+    <div class="col text-center">
+      <h3>{{this.name}}</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Nome</th>
+            <th scope="col">Email</th>
+              <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">{{this.name}}</th>
+            <td>{{this.email}}</td>
+              <td>
+{{!--                 <a
+                  id="userDeletar"
+                  type="button"
+                  class="btn btn-light btn-small"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmModal"
+                  data-rota="/deluser/{{this.id}}"
+                  data-nome="{{this.name}}"
+                ><i class="bi bi-person-x"></i> Delete</a> --}}
+              <button                   
+              id="userApagar"
+                  class="btn btn-light btn-small"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmModal"
+                  data-rota="/deluser/{{this.id}}"
+                  data-nome="{{this.name}}"
+                ><i class="bi bi-person-x"></i> Apagar</button>
+              </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+{{/each}}
+</div>
+
+<script>
+  document.getElementById("userApagar").addEventListener('click', () => {
+    const userDeletar = document.getElementById("userApagar");
+    let btn_onclickConfirm = document.getElementById("btn-onclickConfirm");
+    btn_onclickConfirm.attributes['onclick'].value = "window.location = document.querySelector('#userApagar').dataset.rota";
+    console.log(btn_onclickConfirm.attributes['onclick'].value);
+    abreModal('confirmModalLabel','confirmModalBody','Apagar Usuário', `Confirma deletar
+          ${userDeletar.dataset.nome} ?`,'OK','confirmModal')
+  })
+</script>

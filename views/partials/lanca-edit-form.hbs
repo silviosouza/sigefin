@@ -1,0 +1,156 @@
+{{#each arLanca.[0]}}
+
+<div class="col-12">
+
+  <h1>{{this.id}}</h1>
+
+    <div class="col-12 mt-1">
+
+<div class="mb-3">
+  <label for="option1" class="col-sm-2 col-form-label">Tipo</label>
+  <input
+    type="text"
+    class="form-control"
+    name="tipo"
+    id="option1"
+    autocomplete="off"
+    value="{{this.tipo}}"
+    disabled
+  />
+  {{!-- <label class="btn btn-secondary" for="option1">Tipo</label> --}}
+</div>
+
+    <div class="form-floating mb-3">
+      <input
+        {{!-- onfocus="myFunction('option1','option2')" --}}
+        type="date"
+        class="form-control"
+        id="floatingInput"
+        value="{{this.femissao}}"
+        name="emissao"
+        pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}"
+        placeholder="dd/mm/aaaa"
+        required
+      />
+      <label for="floatingInput">Emissão</label>
+    </div>
+  </div>
+
+  <div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupSelect01">Categoria</label>
+    <select
+      onfocus=""
+      class="form-select"
+      id="catSelect"
+      name="categoria"
+      required
+    >
+      <option value="{{this.cat_id}}" selected>{{this.nome_categoria}}</option>
+      {{#each ../arLanca.[1]}}
+      <option value="{{this.id}}">{{this.descricao}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupSelect01">Pessoa</label>
+    <select class="form-select" id="pesSelect" name="pessoa">
+      <option value="{{this.pes_id}}" selected >{{this.nome_pessoa}}<option>
+      {{#each ../arLanca.[2]}}
+        <option value="{{this.id}}">{{this.nome}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupSelect01">Banco</label>
+    <select class="form-select" id="banSelect" name="banco" required disabled>
+      <option value="{{this.banco_id}}" selected disabled>{{this.nome_banco}}</option>
+      {{#each ../arLanca.[3]}}
+        <option value="{{this.id}}">{{this.nome}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="input-group mb-3">
+    <label class="input-group-text" for="opeSelect">Operação</label>
+    <select
+      class="form-select"
+      id="inputGroupSelect01"
+      name="operacao"
+      required
+      disabled
+    >
+      <option value="{{this.ope_id}}" selected disabled>{{this.descricao_ope}}</option>
+      {{#each ../arLanca.[4]}}
+        <option value="{{this.id}}">{{this.descricao}}</option>
+      {{/each}}
+    </select>
+  </div>
+
+  <div class="col-12 mt-2">
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        class="form-control"
+        id="floatingInput"
+        value="{{this.lanca_desc}}"
+        placeholder="Descrição"
+        name="descricao"
+      />
+      <label for="floatingInput">Descrição</label>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-floating mb-3">
+      <input
+        type="number"
+        step="0.01"
+        class="form-control"
+        id="floatingInput"
+        value="{{this.valor}}"
+        placeholder="0,00"
+        name="valor"
+        required
+        disabled=data-val
+      />
+      <label for="floatingInput">Valor</label>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-floating mb-3">
+      <input
+        type="date"
+        class="form-control"
+        id="floatingInput"
+        value="{{this.fvencimento_em}}"
+        {{!-- value="2024/07/19" --}}
+        name="vencimento_em"
+      />
+      <label for="floatingInput">Vencimento</label>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="form-floating mb-3">
+      <input
+        type="number"
+        class="form-control"
+        id="floatingInput"
+        value="{{this.id_origem}}"
+        placeholder="ID"
+        name="origem_id"
+      />
+      <label for="floatingInput">ID Lançamento Origem</label>
+    </div>
+  </div>
+  <div class="col-12 d-grid">
+    {{!-- <button class="btn btn-primary" type="button" onclick="myFunction({'option1', 'option'}})">Lançar</button> --}}
+    <button class="btn btn-primary" type="submit">Prosseguir</button>
+  </div>
+
+</div>
+<script>
+  let edForm = document.getElementById("edLancaForm")
+  edForm.setAttribute('action', `/editlanca/`+{{this.id}})
+</script>
+{{/each}}

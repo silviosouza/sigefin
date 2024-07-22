@@ -1,0 +1,34 @@
+<div class="col-6">
+  <div class="form-floating mb-3">
+    <input
+      type="text"
+      class="form-control"
+      id="floatingInput"
+      value="{{this.nome}}"
+      placeholder="Nome da pessoa"
+      name="nome"
+      minlength="3"
+      maxlength="64"
+      required
+    />
+    <label for="floatingInput">Nome</label>
+  </div>
+</div>
+<div class="col-6">
+  <div class="form-floating mb-3">
+    <div class="input-group mb-3">
+      <select class="form-select" id="inputGroupSelect02" id="floatingInput" name="tipo"  >
+        <option>Escolha...</option>
+        <option value="C">Cliente</option>
+        <option value="F">Fornecedor</option>
+      </select>
+      <label class="input-group-text" for="inputGroupSelect02">Tipo</label>
+    </div>
+
+    {{!--       <input type="text" class="form-control has-validation" id="floatingInput" value="{{this.tipo}}" name="tipo"  minlength="1" maxlength="1" required>
+      <label for="floatingInput">Tipo C/F</label> --}}
+  </div>
+</div>
+<div class="col-12 d-grid">
+  <button class="btn btn-primary" type="submit">Submit</button>
+</div>

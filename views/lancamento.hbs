@@ -1,0 +1,316 @@
+{{#if removedLanca}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    Lançamento foi deletado.
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+{{/if}}
+
+{{#if error}}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{error}}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+{{/if}}
+
+<p class="d-inline-flex gap-1">
+  <a
+    class="btn btn-primary"
+    data-bs-toggle="collapse"
+    href="#collapseSearch"
+    role="button"
+    aria-expanded="false"
+    aria-controls="collapseExample"
+  >
+    <i class="bi bi-search" title="Pesquisa, filtros e ordens"></i>
+  </a>
+  <a
+    class="btn btn-primary"
+    href="/lanca"
+    role="button"
+    aria-expanded="false"
+    aria-controls="collapseExample"
+  >
+    <i class="bi bi-eraser" title="Limpar filtros e ordens"></i>
+  </a>
+</p>
+<div class="collapse" id="collapseSearch">
+  <div class="card card-body">
+    <form
+      class="row row-cols-lg-auto g-3 align-items-center"
+      method="POST"
+      action="/lanca"
+      novalidate
+    >
+      <div class="col-12">
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Procurar"
+          name="search"
+          aria-label="Search"
+        />
+      </div>
+
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="true"
+              aria-controls="collapseOne"
+            >
+              <i class="bi bi-sort-alpha-down"> Ordenação</i>
+            </button>
+          </h2>
+          <div
+            id="collapseOne"
+            class="accordion-collapse collapse show"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              {{! ordem   }}
+              <div class="col-12">
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptions1"
+                    id="inlineRadio1"
+                    value="emissao desc, id"
+                    checked
+                  />
+                  <label
+                    class="form-check-label"
+                    for="inlineRadio1"
+                  >Emissão</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptions1"
+                    id="inlineRadio2"
+                    value="vencimento_em"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="inlineRadio2"
+                  >Vencimento</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptions1"
+                    id="inlineRadio3"
+                    value="nome_categoria"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="inlineRadio3"
+                  >Categoria</label>
+                </div>
+              </div>
+
+              {{! direção }}
+              <div class="col-12">
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptions2"
+                    id="inlineRadio21"
+                    value="asc"
+                  />
+                  <label class="form-check-label" for="inlineRadio1">ASC<i
+                      class="bi bi-arrow-up-short"
+                    ></i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptions2"
+                    id="inlineRadio22"
+                    value="desc"
+                    checked
+                  />
+                  <label class="form-check-label" for="inlineRadio2">DESC<i
+                      class="bi bi-arrow-down-short"
+                    ></i></label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseTwo"
+              aria-expanded="false"
+              aria-controls="collapseTwo"
+            >
+              <i class="bi bi-filter"> Filtros</i>
+            </button>
+          </h2>
+          <div
+            id="collapseTwo"
+            class="accordion-collapse collapse"
+            data-bs-parent="#accordionExample"
+          >
+            <div class="accordion-body">
+              <strong>Nenhum filtro disponível no momento.</strong>
+              Brevemente teremos novidades por aqui.
+              {{! D ou R }}
+              <div class="col-12">
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptionsT"
+                    id="inlineRadioD"
+                    value="D"
+                  />
+                  <label class="form-check-label" for="inlineRadio1">Despesa<i
+                      class="bi bi-arrow-up-short"
+                    ></i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptionsT"
+                    id="inlineRadioR"
+                    value="R"
+                  />
+                  <label class="form-check-label" for="inlineRadio2">Receita<i
+                      class="bi bi-arrow-down-short"
+                    ></i></label>
+                </div>
+                {{! // Operação }}
+                  <div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupSelect01">Operação</label>
+                <select class="form-select" aria-label="Default select example" name="filterOpe">
+                  <option value="0" selected>Selecionar...</option>
+                  <option value="1">À vista</option>
+                  <option value="2">À crédito</option>
+                  <option value="3">Estorno</option>
+                  <option value="4">Estornado</option>
+                </select>
+                </div>
+                {{! // banco }}
+                  <div class="input-group mb-3">
+    <label class="input-group-text" for="inputGroupSelect01">Banco</label>
+                <select class="form-select" aria-label="Default select example" name="filterBan"> 
+                  <option value="0" selected>Selecionar...</option>
+                  <option value="1">Santander</option>
+                  <option value="2">Banco do Brasil</option>
+                </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <button class="btn btn-outline-dark" type="submit">Procurar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-6">
+    <h1>Lançamentos</h1>
+  </div>
+  <div class="col-6 d-flex justify-content-end">
+    <a
+      href="/addlanca"
+      type="button"
+      class="btn btn-primary align-self-center"
+    >+ Novo</a>
+  </div>
+</div>
+
+<div class="table-responsive-sm tabela">
+  <table class="table table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Tp</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Pessoa</th>
+        <th scope="col">Descrição</th>
+        <th scope="col" class="text-end">Valor</th>
+        <th scope="col">Emissão</th>
+        <th scope="col">Vencimento</th>
+        <th scope="col">Banco</th>
+        <th scope="col">Operação</th>
+        <th scope="col">Lanc. Orig.</th>
+        <th scope="col" class="text-end">Ver</th>
+        <th scope="col" class="text-end">Editar</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {{#each rows}}
+        <tr>
+          <th scope="row">{{this.id}}</th>
+          <td>{{this.tipo}}</td>
+          <td>{{this.nome_categoria}}</td>
+          <td>{{this.nome_pessoa}}</td>
+          <td>{{this.lanca_desc}}</td>
+          <td class="text-end">{{this.valor}}</td>
+          <td>{{this.emissao}}</td>
+          <td>{{this.vencimento_em}}</td>
+          <td>{{this.nome_banco}}</td>
+          <td>{{this.descricao_ope}}</td>
+          <td>{{this.id_origem}}</td>
+          <td class="text-end list-inline">
+            <a
+              href="/viewlanca/{{this.id}}"
+              type="button"
+              class="btn btn-light btn-sm list-inline-item"
+            ><i class="bi bi-eye"></i> </a>
+            {{!--               <a 
+                href="/dellanca/{{this.id}}"
+                type="button"
+                class="btn btn-light btn-sm list-inline-item"
+              ><i class="bi bi-file-minus"></i></a> --}}
+          </td>
+            <td>
+            <a
+              href="/editlanca/{{this.id}}"
+              type="button"
+              class="btn btn-light btn-sm list-inline-item"
+            ><i class="bi bi-pencil"></i>
+            </a>
+            </td>
+        </tr>
+      {{/each}}
+
+    </tbody>
+  </table>
+</div>
+
+<style>
+  @media screen and (max-width: 600px) { div.tabela { font-size: 30px; } }
+</style>

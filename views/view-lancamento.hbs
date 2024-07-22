@@ -1,0 +1,89 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/lanca">Lançamentos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Ver Lançamento</li>
+  </ol>
+</nav>
+
+{{#if alert}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{alert}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+{{#if error}}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{error}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+<div class="view-user p-12">
+  {{#each rows}}
+    <div class="row mb-5">
+      <div class="col text-center">
+        <h3>{{this.lanca_desc}}</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="table-responsive">
+        <div class="col">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Baixar</th>
+                <th scope="col">Estornar</th>
+                <th scope="col">ID</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Pessoa</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Emissão</th>
+                <th scope="col">Vencimento</th>
+                <th scope="col">Banco</th>
+                <th scope="col">Operação</th>
+                <th scope="col">Lanc. Orig.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>            <button
+              id="lancaBaixar"
+              class="btn btn-light btn-small"
+              data-bs-toggle="modal"
+              data-bs-target="#confirmModal"
+              data-rota="/baixarlanca/{{this.id}}"
+              data-nome="ID: {{this.id}} {{this.lanca_desc}}"
+            ><i class="bi bi-wallet2"></i></button>
+</td>
+                <td>            <button
+              id="lancaApagar"
+              class="btn btn-light btn-small"
+              data-bs-toggle="modal"
+              data-bs-target="#confirmModal"
+              data-rota="/dellanca/{{this.id}}"
+              data-nome="ID: {{this.id}} {{this.lanca_desc}}"
+            ><i class="bi bi-file-minus"></i></button>
+</td>
+                <th>{{this.id}}</th>
+                <td>{{this.tipo}}</td>
+                <td>{{this.nome_categoria}}</td>
+                <td>{{this.nome_pessoa}}</td>
+                <td>{{this.lanca_desc}}</td>
+                <td>{{this.valor}}</td>
+                <td>{{this.emissao}}</td>
+                <td>{{this.vencimento_em}}</td>
+                <td>{{this.nome_banco}}</td>
+                <td>{{this.descricao_ope}}</td>
+                <td>{{this.id_origem}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>

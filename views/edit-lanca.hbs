@@ -1,0 +1,27 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/lanca">Lançamentos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Lançamento</li>
+  </ol>
+</nav>
+
+{{#if alert}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{alert}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+{{#if error}}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{error}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+{{!-- {{#each arLanca.[0]}} --}}
+<form class="row g-3 needs-validation" method="POST" action="/editlanca/{{this.id}}" id="edLancaForm"> 
+  {{> lanca-edit-form}}
+</form>
+{{!-- {{/each}} --}}

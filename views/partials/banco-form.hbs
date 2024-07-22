@@ -1,0 +1,31 @@
+<div class="col-12">
+  <div class="form-floating mb-3">
+    <input
+      type="text"
+      class="form-control"
+      id="floatingInput"
+      value="{{this.nome}}"
+      placeholder="Nome do banco"
+      name="nome"
+      minlength="3"
+      maxlength="64"
+      required
+    />
+    <label for="floatingInput">Nome</label>
+  </div>
+</div>
+<div class="col-6">
+  <div class="form-floating mb-3">
+          <input type="number" step="0.01" class="form-control has-validation" id="saldo_anterior" value="{{this.saldo_anterior}}" name="saldo_anterior" required>
+      <label for="floatingInput">Saldo anterior</label>
+  </div>
+</div>
+<div class="col-6">
+  <div class="form-floating mb-3">
+          <input type="text" class="form-control has-validation" id="saldo" value="{{this.saldo}}" name="saldo" required>
+      <label for="floatingInput">Saldo</label>
+  </div>
+</div>
+<div class="col-12 d-grid">
+  <button class="btn btn-primary" type="submit">Submit</button>
+</div>

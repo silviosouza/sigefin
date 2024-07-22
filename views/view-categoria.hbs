@@ -1,0 +1,120 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/categoria">Categorias</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Ver Categoria</li>
+  </ol>
+</nav>
+
+{{#if alert}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{alert}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+{{#if error}}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{error}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+<div class="view-user p-12">
+  {{#each rows}}
+    <div class="row mb-5">
+      <div class="col text-center">
+        <h3>{{this.descricao}}</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Descrição</th>
+              <th scope="col">Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">{{this.descricao}}</th>
+              <td>
+{{!--                 <a
+                  id="deletar"
+                  type="button"
+                  class="btn btn-light btn-small"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                  data-rota="/delcategoria/{{this.id}}"
+                  data-nome="{{this.nome}}"
+                ><i class="bi bi-person-x"></i> Delete</a> --}}
+              <button                   
+              id="categoriaApagar"
+                  class="btn btn-light btn-small"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmModal"
+                  data-rota="/delcategoria/{{this.id}}"
+                  data-nome="{{this.descricao}}"
+                ><i class="bi bi-trash"></i> Apagar</button>
+
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+{{!--     <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Deletar Categoria</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            Confirma deletar {{"descricao"}}
+            ?
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >Não</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="window.location = document.querySelector('#deletar').dataset.rota"
+            >Confirme</button>
+          </div>
+        </div>
+      </div>
+    </div> --}}
+  {{/each}}
+</div>
+
+<script>
+   // Categoria
+  document.getElementById("categoriaApagar").addEventListener('click', () => {
+    let btn_onclickConfirm = document.getElementById("btn-onclickConfirm");
+    const categoriaDeletar = document.getElementById("categoriaApagar");
+    btn_onclickConfirm.attributes['onclick'].value = "window.location = document.querySelector('#categoriaApagar').dataset.rota"
+    {{!-- console.log(btn_onclickConfirm.attributes['onclick']); --}}
+    abreModal('confirmModalLabel','confirmModalBody','Apagar Categoria', `Confirma deletar
+          ${categoriaDeletar.dataset.nome} ?`,'OK','confirmModal')
+  })
+  </script>
+

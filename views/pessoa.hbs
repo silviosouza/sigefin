@@ -1,0 +1,78 @@
+{{#if removedPessoa}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{removedPessoa}}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+{{/if}}
+
+<form class="d-flex" method="POST" action="/pessoa" novalidate>
+  <input
+    class="form-control me-2"
+    type="search"
+    placeholder="Procurar"
+    name="search"
+    aria-label="Search"
+  />
+  <button class="btn btn-outline-dark" type="submit">Procurar</button>
+</form>
+
+<div class="row">
+  <div class="col-6">
+    <h1>Pessoas</h1>
+  </div>
+  <div class="col-6 d-flex justify-content-end">
+    <a
+      href="/addpessoa"
+      type="button"
+      class="btn btn-primary align-self-center"
+    >+ Nova</a>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nome</th>
+        <th scope="col">Tipo</th>
+        {{! <th scope="col">Email</th> }}
+        {{! <th scope="col">Phone</th> }}
+        <th scope="col" class="text-end">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {{#each rows}}
+        <tr>
+          <th scope="row">{{this.id}}</th>
+          <td>{{this.nome}}</td>
+          <td>{{this.tipo}}</td>
+          {{!-- <td>{{this.email}}</td> --}}
+          {{!-- <td>{{this.phone}}</td> --}}
+          <td class="text-end">
+            <a
+              href="/viewpessoa/{{this.id}}"
+              type="button"
+              class="btn btn-light btn-small"
+            ><i class="bi bi-eye"></i> Ver</a>
+            <a
+              href="/editpessoa/{{this.id}}"
+              type="button"
+              class="btn btn-light btn-small"
+            ><i class="bi bi-pencil"></i>
+              Editar</a>
+          </td>
+        </tr>
+
+      {{/each}}
+
+    </tbody>
+  </table>
+
+</div>

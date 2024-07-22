@@ -1,0 +1,73 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/ope">Operações</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Ver Operações</li>
+  </ol>
+</nav>
+
+{{#if alert}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{alert}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+{{#if error}}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{error}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{{/if}}
+
+<div class="view-user p-12">
+  {{#each rows}}
+    <div class="row mb-5">
+      <div class="col text-center">
+        <h3>{{this.descricao}}</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="table-responsive">
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Descrição</th>
+                <th scope="col">Deletar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">{{this.descricao}}</th>
+              <td>
+               <button                   
+              id="opeApagar"
+                  class="btn btn-light btn-small"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmModal"
+                  data-rota="/delope/{{this.id}}"
+                  data-nome="{{this.descricao}}"
+                ><i class="bi bi-person-x"></i> Apagar</button>
+              </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  {{/each}}
+</div>
+
+<script>
+  document.getElementById("opeApagar").addEventListener('click', () => {
+    const opeDeletar = document.getElementById("opeApagar");
+    let btn_onclickConfirm = document.getElementById("btn-onclickConfirm");
+    btn_onclickConfirm.attributes['onclick'].value = "window.location = document.querySelector('#opeApagar').dataset.rota";
+    console.log(btn_onclickConfirm.attributes['onclick'].value);
+    abreModal('confirmModalLabel','confirmModalBody','Apagar Operação', `Confirma deletar
+          ${opeDeletar.dataset.nome} ?`,'OK','confirmModal')
+  })
+</script>
