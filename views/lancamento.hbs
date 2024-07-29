@@ -1,3 +1,5 @@
+{{!-- {{#each rows}} --}}
+<div class="fs-6">
 {{#if removedLanca}}
   <div class="alert alert-success alert-dismissible fade show" role="alert">
     Lançamento foi deletado.
@@ -123,6 +125,19 @@
                     for="inlineRadio3"
                   >Categoria</label>
                 </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioOptions1"
+                    id="inlineRadio3"
+                    value="nome_pessoa"
+                  />
+                  <label
+                    class="form-check-label"
+                    for="inlineRadio3"
+                  >Entidade</label>
+                </div>
               </div>
 
               {{! direção }}
@@ -175,10 +190,10 @@
             data-bs-parent="#accordionExample"
           >
             <div class="accordion-body">
-              <strong>Nenhum filtro disponível no momento.</strong>
-              Brevemente teremos novidades por aqui.
+
+                <h6>Tipo de Lançamento</h6>
+<div class="p-2 border mb-2 rounded">
               {{! D ou R }}
-              <div class="col-12">
                 <div class="form-check form-check-inline">
                   <input
                     class="form-check-input"
@@ -187,9 +202,7 @@
                     id="inlineRadioD"
                     value="D"
                   />
-                  <label class="form-check-label" for="inlineRadio1">Despesa<i
-                      class="bi bi-arrow-up-short"
-                    ></i></label>
+                  <label class="form-check-label" for="inlineRadio1">Despesas</label>
                 </div>
                 <div class="form-check form-check-inline">
                   <input
@@ -199,29 +212,168 @@
                     id="inlineRadioR"
                     value="R"
                   />
-                  <label class="form-check-label" for="inlineRadio2">Receita<i
-                      class="bi bi-arrow-down-short"
-                    ></i></label>
+                  <label class="form-check-label" for="inlineRadio2">Receitas</label>
+                </div>
+</div>
+
+              {{!-- Período do filtro --}}
+{{!-- Data de emissão ou vencimento  --}}
+
+              {{! Emissao, Vencimento ou pago }}
+              {{!-- <div class="col-12"> --}}
+                <h6>Período</h6>
+              <div class="p-2 border border rounded mb-2">
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="dtFiltro"
+                    id="dtEmissao"
+                    value="E"
+                    selected
+                  />
+                  <label class="form-check-label" for="inlineRadio1">Emissão</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="dtFiltro"
+                    id="dtVenc"
+                    value="V"
+                  />
+                  <label class="form-check-label" for="inlineRadio2">Vencimento</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="dtFiltro"
+                    id="dtPago"
+                    value="P"
+                  />
+                  <label class="form-check-label" for="inlineRadio2">Pago</label>
+                </div>
+
+
+  <div class="col-12 mt-1">
+    <div class="form-floating mb-2">
+      <input
+        onfocus="myFunction('option1','option2')"
+        type="date"
+        class="form-control"
+        id="floatingInput"
+        value="{{this.femissao}}"
+        name="dtinicial"
+        pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}"
+        placeholder="dd/mm/aaaa"
+        required
+      />
+      <label for="floatingInput">Data inicial</label>
+    </div>
+  </div>
+
+  <div class="col-12 mt-1">
+    <div class="form-floating mb-1">
+      <input
+        onfocus="myFunction('option1','option2')"
+        type="date"
+        class="form-control"
+        id="floatingInput"
+        value="{{this.femissao}}"
+        name="dtfinal"
+        pattern="[0-9]{2}-[0-9]{2}-[0-9]{4}"
+        placeholder="dd/mm/aaaa"
+        required
+      />
+      <label for="floatingInput">Data final</label>
+    </div>
+  </div>
+</div>
+
+
+              <div class="col-12">
+                {{! // Categoria }}
+                <div class="input-group mb-3">
+                  <label
+                    class="input-group-text"
+                    for="inputGroupSelect01"
+                  >Categoria</label>
+                  <select
+                    class="form-select"
+                    aria-label="Default select example"
+                    id="filterCat"
+                    name="filterCat"
+                  >
+                    <option value="0" selected>Selecionar...</option>
+                    {{#each cat}}
+                    <option value="{{this.id}}">{{this.descricao}}</option>
+{{!--                     <option value="2">À crédito</option>
+                    <option value="3">Estorno</option>
+                    <option value="4">Estornado</option> --}}
+                    {{/each}}
+                  </select>
+                </div>
+                {{! // Entidade }}
+                <div class="input-group mb-3">
+                  <label
+                    class="input-group-text"
+                    for="inputGroupSelect01"
+                  >Entidade</label>
+                  <select
+                    class="form-select"
+                    aria-label="Default select example"
+                    id="filterEnt"
+                    name="filterEnt"
+                  >
+                    <option value="0" selected>Selecionar...</option>
+                    {{#each ent}}
+                    <option value="{{this.id}}">{{this.nome}}</option>
+{{!--                     <option value="2">À crédito</option>
+                    <option value="3">Estorno</option>
+                    <option value="4">Estornado</option> --}}
+                    {{/each}}
+                  </select>
                 </div>
                 {{! // Operação }}
-                  <div class="input-group mb-3">
-    <label class="input-group-text" for="inputGroupSelect01">Operação</label>
-                <select class="form-select" aria-label="Default select example" name="filterOpe">
-                  <option value="0" selected>Selecionar...</option>
-                  <option value="1">À vista</option>
-                  <option value="2">À crédito</option>
-                  <option value="3">Estorno</option>
-                  <option value="4">Estornado</option>
-                </select>
+                <div class="input-group mb-3">
+                  <label
+                    class="input-group-text"
+                    for="inputGroupSelect01"
+                  >Operação</label>
+                  <select
+                    class="form-select"
+                    aria-label="Default select example"
+                    id="filterOpe"
+                    name="filterOpe"
+                  >
+                    <option value="0" selected>Selecionar...</option>
+                    {{#each ope}}
+                    <option value="{{this.id}}">{{this.descricao}}</option>
+{{!--                     <option value="2">À crédito</option>
+                    <option value="3">Estorno</option>
+                    <option value="4">Estornado</option> --}}
+                    {{/each}}
+                  </select>
                 </div>
                 {{! // banco }}
-                  <div class="input-group mb-3">
-    <label class="input-group-text" for="inputGroupSelect01">Banco</label>
-                <select class="form-select" aria-label="Default select example" name="filterBan"> 
-                  <option value="0" selected>Selecionar...</option>
-                  <option value="1">Santander</option>
-                  <option value="2">Banco do Brasil</option>
-                </select>
+                <div class="input-group mb-3">
+                  <label
+                    class="input-group-text"
+                    for="inputGroupSelect01"
+                  >Banco</label>
+                  <select onfocusin="getBanco()"
+                    class="form-select"
+                    aria-label="Default select example"
+                    name="filterBan"
+                    id="filterBan"
+                  >
+                    <option value="0" selected>Selecionar...</option>
+                  {{#each ban}}
+                    <option value="{{id}}">{{nome}}</option>
+                    {{!-- <option value="2">Banco do Brasil</option> --}}
+                    {{/each}}
+                  </select>
                 </div>
               </div>
             </div>
@@ -229,7 +381,7 @@
         </div>
       </div>
 
-      <div class="col-12">
+      <div class="col-12 text-end">
         <button class="btn btn-outline-dark" type="submit">Procurar</button>
       </div>
     </form>
@@ -251,17 +403,18 @@
 </div>
 
 <div class="table-responsive-sm tabela">
-  <table class="table table-bordered">
+  <table class="table table-bordered table-striped">
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
         <th scope="col">Tp</th>
         <th scope="col">Categoria</th>
-        <th scope="col">Pessoa</th>
+        <th scope="col">Entidade</th>
         <th scope="col">Descrição</th>
         <th scope="col" class="text-end">Valor</th>
         <th scope="col">Emissão</th>
         <th scope="col">Vencimento</th>
+        <th scope="col">Quitado em</th>
         <th scope="col">Banco</th>
         <th scope="col">Operação</th>
         <th scope="col">Lanc. Orig.</th>
@@ -281,10 +434,11 @@
           <td class="text-end">{{this.valor}}</td>
           <td>{{this.emissao}}</td>
           <td>{{this.vencimento_em}}</td>
+          <td>{{this.pago_em}}</td>
           <td>{{this.nome_banco}}</td>
           <td>{{this.descricao_ope}}</td>
           <td>{{this.id_origem}}</td>
-          <td class="text-end list-inline">
+          <td class="text-center">
             <a
               href="/viewlanca/{{this.id}}"
               type="button"
@@ -296,21 +450,30 @@
                 class="btn btn-light btn-sm list-inline-item"
               ><i class="bi bi-file-minus"></i></a> --}}
           </td>
-            <td>
+          <td class="text-center">
             <a
               href="/editlanca/{{this.id}}"
               type="button"
               class="btn btn-light btn-sm list-inline-item"
             ><i class="bi bi-pencil"></i>
             </a>
-            </td>
+          </td>
         </tr>
       {{/each}}
 
     </tbody>
+    <tfoot>
+      <tr>
+        <td></td><td></td><td></td><td></td>
+        <th scope="row" class="text-end">Total</th>
+        <td>{{total}}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+
+      </tr>
+    </tfoot>
   </table>
 </div>
-
+</div>
+{{!-- {{/each}} --}}
 <style>
   @media screen and (max-width: 600px) { div.tabela { font-size: 30px; } }
 </style>

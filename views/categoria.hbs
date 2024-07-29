@@ -26,11 +26,11 @@
 </div>
 
 <div class="table-responsive">
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
   <thead class="thead-dark">
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Descrição</th>
+      <th scope="col" class="text-center"><button type="button" class="btn btn-light" id="btnId">#</button></th>                           {{!-- <i id="btnOrdId" class="bi bi-sort-numeric-up"></i> --}}  {{!-- <i class="bi bi-sort-numeric-up-alt"></i> --}}
+      <th scope="col"><button type="button" class="btn btn-light" id="btnDesc">Descrição <i id="btnOrdDesc" class="bi bi-sort-alpha-down"></i></button></th>   {{!-- <i class="bi bi-sort-alpha-down-alt"></i> --}}
       <th scope="col" class="text-end">Ações</th>
     </tr>
   </thead>
@@ -38,11 +38,11 @@
 
     {{#each rows}}
     <tr>
-      <th scope="row">{{this.id}}</th>
+      <th scope="row" class="text-center">{{this.id}}</th>
       <td>{{this.descricao}}</td>
       <td class="text-end">
-        <a href="/viewcategoria/{{this.id}}" type="button" class="btn btn-light btn-small"><i class="bi bi-eye"></i> Ver</a>
-        <a href="/editcategoria/{{this.id}}" type="button" class="btn btn-light btn-small"><i class="bi bi-pencil"></i>
+        <a href="/viewcategoria/{{this.id}}" type="button" class="btn btn-light btn-sm"><i class="bi bi-eye"></i> Ver</a>
+        <a href="/editcategoria/{{this.id}}" type="button" class="btn btn-light btn-sm"><i class="bi bi-pencil"></i>
           Editar</a>
       </td>
     </tr>
@@ -51,3 +51,40 @@
   </tbody>
 </table>
 </div>
+
+<script>
+  btnDesc = document.getElementById("btnDesc");
+  btnId = document.getElementById("btnId");
+
+  btnId.addEventListener('click', () => {
+    iId = document.getElementById("btnOrdId")
+    if(!iId) {
+      btnId.innerHTML = `# <i id="btnOrdId" class="bi bi-sort-numeric-up"></i>`
+    } else {
+      {{!-- console.log(iDesc.classList.contains("bi bi-sort-numeric-up-alt")) --}}
+      if(iId.classList.contains("bi-sort-numeric-up-alt")) {
+        iId.classList.remove("bi-sort-numeric-up-alt");
+        iId.classList.add("bi-sort-numeric-up");
+      } else {
+        iId.classList.remove("bi-sort-numeric-up");
+        iId.classList.add("bi-sort-numeric-up-alt");
+      }
+    }
+  });
+
+  btnDesc.addEventListener('click', () => {
+    iDesc = document.getElementById("btnOrdDesc")
+    if(!iDesc) {
+      {{!-- btnId.innerHTML =  --}}
+    }
+    console.log(iDesc.classList.contains("bi-sort-alpha-down"))
+    if(iDesc.classList.contains("bi-sort-alpha-down")) {
+    iDesc.classList.remove("bi-sort-alpha-down");
+    iDesc.classList.add("bi-sort-alpha-down-alt");
+    } else {
+    iDesc.classList.remove("bi-sort-alpha-down-alt");
+    iDesc.classList.add("bi-sort-alpha-down");
+    }
+  });
+  
+</script>

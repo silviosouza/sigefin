@@ -18,6 +18,7 @@ router.get('/editlanca/:id', lancaController.edit);
 router.post('/editlanca/:id', lancaController.update);
 router.get('/viewlanca/:id', lancaController.viewall);
 router.get('/dellanca/:id',lancaController.delete); 
+router.get('/baixarlanca/:id',lancaController.baixar); 
 
 // Bancos
 router.get('/banco', bancoController.view);
@@ -57,6 +58,7 @@ router.get('/edituser/:id', userController.edit);
 router.post('/edituser/:id', userController.update);
 router.get('/viewuser/:id', userController.viewall);
 router.get('/deluser/:id',userController.delete);
+router.post('/login',userController.login);
 
 // Operações
 router.get('/ope', opeController.view);
@@ -70,7 +72,11 @@ router.get('/delope/:id',opeController.delete);
 
 
 router.get('/',function(req, res, next) {
-    res.render('home');
-  });
-  
+  res.render('home', {dbName: process.env.DB_NAME});
+});
+
+router.get('/login',function(req, res, next) {
+  res.render('login');
+});
+
 module.exports = router;

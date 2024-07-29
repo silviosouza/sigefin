@@ -5,5 +5,15 @@
     <h5>Bem vindo ao Gestor Financeiro</h5>
     <br>
     <h6>Investindo no futuro</h6>
+    {{#if dbName}}
+    <br>
+    <h7>{{dbName}}</h7>
+    {{/if}}
   </div>
 </div>
+
+<script>
+    elTitle = document.querySelector('title');
+    console.log(elTitle)
+    elTitle.innerHTML = `SIGEFIN ({{dbName}})`;
+</script>

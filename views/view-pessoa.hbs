@@ -1,8 +1,8 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Home</a></li>
-    <li class="breadcrumb-item"><a href="/pessoa">Pessoas</a></li>
-    <li class="breadcrumb-item active" aria-current="page">View Pessoa</li>
+    <li class="breadcrumb-item"><a href="/pessoa">Entidades</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Ver Entidade</li>
   </ol>
 </nav>
 
@@ -66,7 +66,7 @@
     let btn_onclickConfirm = document.getElementById("btn-onclickConfirm");
     btn_onclickConfirm.attributes['onclick'].value = "window.location = document.querySelector('#pessoaApagar').dataset.rota";
     console.log(btn_onclickConfirm.attributes['onclick'].value);
-    abreModal('confirmModalLabel','confirmModalBody','Apagar Pessoa', `Confirma deletar
+    abreModal('confirmModalLabel','confirmModalBody','Apagar Entidade', `Confirma deletar
           ${pessoaDeletar.dataset.nome} ?`,'OK','confirmModal')
   })
 </script>

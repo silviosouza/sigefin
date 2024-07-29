@@ -9,13 +9,22 @@ let connection = mysql.createConnection({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   multipleStatements: true,
+  waitForConnections: true,
+  connectionLimit: 10,
+  maxIdle: 10, // Máximo de conexões inativas; o valor padrão é o mesmo que "connectionLimit"
+  idleTimeout: 60000, // Tempo limite das conexões inativas em milissegundos; o valor padrão é "60000"
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
+  connectTimeout: 60000
 });
 
+
 // View Users
-exports.view = (req, res) => {
+exports.view = async  (req, res) => {
   // User the connection
-  connection.query(
-    'SELECT * FROM user WHERE 1=1 AND  status = "active"',
+  await connection.query(
+    'SELECT * FROM user WHERE 1=1 AND status = "active" AND id > 0',
     (err, rows) => {
       // When done with the connection, release it
       if (!err) {
@@ -27,13 +36,14 @@ exports.view = (req, res) => {
       console.log("The data from user table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Find User by Search
-exports.find = (req, res) => {
+exports.find = async  (req, res) => {
   let searchTerm = req.body.search;
   // User the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM user WHERE 1=1 AND  name LIKE ? AND status = 'active'",
     ["%" + searchTerm + "%"],
     (err, rows) => {
@@ -45,9 +55,10 @@ exports.find = (req, res) => {
       console.log("The data from user table: \n", rows);
     }
   );
+  // connection.end();
 };
 
-exports.form = (req, res) => {
+exports.form = async  (req, res) => {
   res.render("add-user");
 };
 
@@ -63,7 +74,7 @@ exports.create = async (req, res) => {
     !password ||
     password.length < 8
   ) {
-    res.render("add-user", { error: "Please fill all the fields" });
+    res.render("add-user", { error: "Favor preencher todos os campos" });
     return;
   }
 
@@ -71,7 +82,7 @@ exports.create = async (req, res) => {
   console.log(password, cryptpassword);
 
   // verica se já existe
-  connection.query(
+  await connection.query(
     `SELECT * FROM user WHERE 1=1 AND (email = ? OR name = ?) AND status = "active";`,
     [email, name],
     (err, rows) => {
@@ -105,13 +116,14 @@ exports.create = async (req, res) => {
       console.log("The data from user table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Edit user
-exports.edit = (req, res) => {
+exports.edit = async  (req, res) => {
   // User the connection
-  connection.query(
-    "SELECT * FROM user WHERE 1=1 AND  id = ?",
+  await connection.query(
+    "SELECT * FROM user WHERE 1=1 AND  id = ? AND status = 'active';",
     [req.params.id],
     (err, rows) => {
       if (!err) {
@@ -122,13 +134,30 @@ exports.edit = (req, res) => {
       console.log("The data from user table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Update User
-exports.update = (req, res) => {
+exports.update = async  (req, res) => {
   const { name, password, email } = req.body;
+  const emailRegexp =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+  if (
+    name.length < 3 ||
+    !emailRegexp.test(email) ||
+    !password ||
+    password.length < 8
+  ) {
+    res.render("add-user", { error: "Favor preencher todos os campos" });
+    return;
+  }
+
+  let cryptpassword = await bcrypt.hash(password, 8);
+  // console.log(password, cryptpassword);
+
   // User the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM user WHERE 1=1 AND status='active' AND name = ? AND id <> ?",
     [name, req.params.id],
     (err, rows) => {
@@ -143,7 +172,7 @@ exports.update = (req, res) => {
           // User the connection
           connection.query(
             "UPDATE user SET name = ?, password = ?, email = ? WHERE 1=1 AND id = ? AND status='active'",
-            [name, password, email, req.params.id],
+            [name, cryptpassword, email, req.params.id],
             (err, rows) => {
               if (!err) {
                 res.render("edit-user", {
@@ -162,14 +191,15 @@ exports.update = (req, res) => {
       console.log("The data from user table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Delete User
-exports.delete = (req, res) => {
+exports.delete = async  (req, res) => {
   // Delete a record
 
   // User the connection
-  // connection.query('DELETE FROM user WHERE 1=1 AND  id = ?', [req.params.id], (err, rows) => {
+  // await connection.query('DELETE FROM user WHERE 1=1 AND  id = ?', [req.params.id], (err, rows) => {
 
   //   if(!err) {
   //     res.redirect('/');
@@ -182,7 +212,7 @@ exports.delete = (req, res) => {
 
   // Hide a record
 
-  connection.query(
+  await connection.query(
     "SELECT name FROM user WHERE 1=1 AND  id = ?; UPDATE user SET status = ? WHERE 1=1 AND  id = ?;",
     [req.params.id, "removed", req.params.id],
     (err, rows) => {
@@ -197,12 +227,13 @@ exports.delete = (req, res) => {
       console.log("The data from beer table are: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // View Users
-exports.viewall = (req, res) => {
+exports.viewall = async  (req, res) => {
   // User the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM user WHERE 1=1 AND status='active' AND id = ?",
     [req.params.id],
     (err, rows) => {
@@ -214,4 +245,12 @@ exports.viewall = (req, res) => {
       console.log("The data from user table: \n", rows);
     }
   );
+  // connection.end();
 };
+
+
+// Login
+exports.login = async (req, res) => {
+  const {usuario, password} = req.body;
+  res.render('login', {alert: `Olá ${usuario} - ${password}`})
+}

@@ -1,0 +1,60 @@
+<main class="form-signin w-100 m-auto">
+  <form action="/login" method="post" >
+    <div class="text-center">
+
+    <img class="mb-4 object-fit-scale border rounded" src="/images/sigefin.png" alt="" width="72" height="72">
+    </div>
+    <h1 class="h3 mb-3 fw-normal">Faça Login</h1>
+
+    <div class="form-floating">
+      <input type="text" class="form-control" name="usuario" id="usuario" placeholder="usuario" required>
+      <label for="floatingInput">Usuário</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" name="password" id="password" placeholder="Senha" required>
+      <label for="floatingPassword">Senha</label>
+    </div>
+
+    <button class="btn btn-primary w-100 py-2" type="submit">Entrar</button>
+    {{!-- <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2024</p> --}}
+  </form>
+{{#if alert}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{alert}}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+{{/if}}</main>
+
+<style>
+  html,
+body {
+  height: 100%;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 1rem;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+</style>

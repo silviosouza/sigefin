@@ -1,5 +1,8 @@
 const mysql = require("mysql");
 
+let currentRec;
+let total = 0;
+
 // Connection Pool
 let connection = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -8,54 +11,132 @@ let connection = mysql.createConnection({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   multipleStatements: true,
+  waitForConnections: true,
+  connectionLimit: 10,
+  maxIdle: 10, // Máximo de conexões inativas; o valor padrão é o mesmo que "connectionLimit"
+  idleTimeout: 60000, // Tempo limite das conexões inativas em milissegundos; o valor padrão é "60000"
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
+  connectTimeout: 60000
+});
+
+connection.connect(function(err) {
+  if (err) {
+    console.error('error connecting: ' + err.stack);
+    return;
+  }
+ 
+  console.log('connected as id ' + connection.threadId);
 });
 
 // View Lanca
-exports.view = (req, res) => {
+exports.view = async (req, res) => {
   // lancamentos the connection
-  connection.query(
-    `SELECT lan.id, lan.tipo, lan.descricao lanca_desc, 
+  await connection.query(
+    `SELECT * FROM categorias WHERE 1=1 AND status='active' ORDER BY descricao;
+  SELECT * FROM pessoas WHERE 1=1 AND status='active' ORDER BY nome;
+  SELECT * FROM bancos WHERE 1=1 AND status='active' ORDER BY nome;
+  SELECT * FROM operacoes WHERE 1=1 AND status='active' ORDER BY descricao;
+  SELECT lan.id, lan.tipo, lan.descricao lanca_desc, 
   date_format(lan.emissao,'%d/%m/%Y') emissao, FORMAT(lan.valor,2,'de_DE') valor, 
-  date_format(lan.vencimento_em,'%d/%m/%Y') vencimento_em, lan.pago_em, 
+  date_format(lan.vencimento_em,'%d/%m/%Y') vencimento_em, 
   cat.descricao nome_categoria, pes.nome nome_pessoa, pes.tipo tipo_pessoa, 
   ban.nome nome_banco, ban.saldo_anterior, ban.saldo, lan.ope_id, lan.id_origem, 
-  ope.descricao descricao_ope
+  ope.descricao descricao_ope, date_format(lan.pago_em,'%d/%m/%Y %H:%i') pago_em
   FROM lancamentos lan 
   LEFT JOIN categorias cat ON cat.id = lan.cat_id  
   LEFT JOIN pessoas pes ON pes.id = lan.pes_id  
   LEFT JOIN bancos ban ON ban.id = lan.banco_id  
   LEFT JOIN operacoes ope ON ope.id = lan.ope_id  
   WHERE 1=1 AND lan.status = "active" 
-  ORDER BY lan.emissao DESC`,
-    (err, rows) => {
+  ORDER BY lan.emissao DESC;
+  `,
+    (err, rows, fields) => {
       // When done with the connection, release it
       if (!err) {
+        linhas = rows
+        rows = linhas[4]
+        ban = linhas[2]
+        ope = linhas[3]
+        ent = linhas[1]
+        cat = linhas[0]
+        total = 0;
+        rows.forEach((element) => {
+/*           console.log(
+            element.valor,
+            parseFloat(element.valor.replace(",", ".")),
+            total
+          ); */
+          total =
+            element.tipo == "R"
+              ? total + parseFloat(element.valor.replace(",", "."))
+              : total - parseFloat(element.valor.replace(",", "."));
+        });
+        total = total.toFixed(2);
         let removedLanca = req.query.removed;
-        res.render("lancamento", { rows, removedLanca });
+        res.render("lancamento", { rows, removedLanca, total, ban, ope, cat, ent });
+        // connection.end();
       } else {
-        console.log(err);
+        // connection.end();
+        // console.log(err);
+        throw err;
       }
-      //   console.log("The data from get(lancamentos) table: \n", rows);
+      console.log("The data from view lancamentos table: \n", rows, total);
     }
   );
 };
 
 // Find Lanca by Search
-exports.find = (req, res) => {
+exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   let orderTerm = req.body.inlineRadioOptions1; //"lan." +
   let directTerm = req.body.inlineRadioOptions2;
-  let filterTipo = (!req.body.inlineRadioOptionsT) ? "" : `AND lan.tipo = "${req.body.inlineRadioOptionsT}"`;
-  let _filterOpe = (!req.body.filterOpe) ?  "" : `AND lan.ope_id = ${req.body.filterOpe}`;
-  let _filterBan = (!req.body.filterBan || req.body.filterBan == 0) ?  "" : `AND lan.banco_id = ${req.body.filterBan}`;
+  let filterTipo = !req.body.inlineRadioOptionsT
+    ? ""
+    : `AND lan.tipo = "${req.body.inlineRadioOptionsT}"`;
 
+    let _filterCat =
+    !req.body.filterCat || req.body.filterCat == 0
+      ? ""
+      : `AND lan.cat_id = ${req.body.filterCat}`;
+      
+  let _filterEnt =
+    !req.body.filterEnt || req.body.filterEnt == 0
+      ? ""
+      : `AND lan.pes_id = ${req.body.filterEnt}`;
 
-  console.log(filterTipo, _filterOpe, _filterBan);
+    let _filterOpe =
+      !req.body.filterOpe || req.body.filterOpe == 0
+        ? ""
+        : `AND lan.ope_id = ${req.body.filterOpe}`;
+        
+    let _filterBan =
+      !req.body.filterBan || req.body.filterBan == 0
+        ? ""
+        : `AND lan.banco_id = ${req.body.filterBan}`;
   
+    let wherefiltro, dfiltro
+
+  switch (req.body.dtFiltro) {
+    case 'E': dfiltro = 'emissao'; break;
+    case 'V': dfiltro = 'vencimento_em'; break;
+    case 'P': dfiltro = 'pago_em'; break;
+    default: dfiltro = 'emissao'; break;
+  } 
+
+  wherefiltro = (!req.body.dtinicial || !req.body.dtfinal) ? `` : `AND ${dfiltro} BETWEEN '${req.body.dtinicial}' AND '${req.body.dtfinal}'`
+
+  console.log(req.body);
+
   // User the connection
-  const qry = `SELECT lan.id, lan.tipo, lan.descricao lanca_desc, 
+  const qry = `SELECT * FROM categorias WHERE 1=1 AND status='active' ORDER BY descricao;
+  SELECT * FROM pessoas WHERE 1=1 AND status='active' ORDER BY nome;
+  SELECT * FROM bancos WHERE 1=1 AND status='active' ORDER BY nome;
+  SELECT * FROM operacoes WHERE 1=1 AND status='active' ORDER BY descricao;
+  SELECT lan.id, lan.tipo, lan.descricao lanca_desc, 
   date_format(lan.emissao,'%d/%m/%Y') emissao, FORMAT(lan.valor,2,'de_DE') valor, 
-  date_format(lan.vencimento_em,'%d/%m/%Y') vencimento_em, lan.pago_em, 
+  date_format(lan.vencimento_em,'%d/%m/%Y') vencimento_em, date_format(lan.pago_em,'%d/%m/%Y %H:%i') pago_em, 
   cat.descricao nome_categoria, pes.nome nome_pessoa, pes.tipo tipo_pessoa, 
   ban.nome nome_banco, ban.saldo_anterior, ban.saldo, lan.ope_id, lan.id_origem,
   ope.descricao descricao_ope
@@ -64,10 +145,12 @@ exports.find = (req, res) => {
   LEFT JOIN pessoas pes ON pes.id = lan.pes_id  
   LEFT JOIN bancos ban ON ban.id = lan.banco_id  
   LEFT JOIN operacoes ope ON ope.id = lan.ope_id
-  WHERE lan.status = "active" AND (pes.nome LIKE ? OR cat.descricao LIKE ? OR lan.descricao LIKE ? OR ban.nome LIKE ?) ${filterTipo} ${_filterOpe} ${_filterBan} 
-  ORDER BY ${orderTerm} ${directTerm}`
-  connection.query(qry
-    ,
+  WHERE lan.status = "active" AND (pes.nome LIKE ? OR cat.descricao LIKE ? OR lan.descricao LIKE ? OR ban.nome LIKE ?) ${filterTipo} ${_filterCat} ${_filterEnt}  ${_filterOpe} ${_filterBan} 
+  ${wherefiltro}
+  ORDER BY ${orderTerm} ${directTerm};
+  `;
+  await connection.query(
+    qry,
     [
       "%" + searchTerm + "%",
       "%" + searchTerm + "%",
@@ -76,20 +159,41 @@ exports.find = (req, res) => {
     ],
     (err, rows) => {
       if (!err) {
-        res.render("lancamento", { rows });
+        total = 0;
+        linhas = rows
+        rows = linhas[4]
+        ban = linhas[2];
+        ope = linhas[3];
+        ent = linhas[1]
+        cat = linhas[0]
+        // console.log(lanca)
+        rows.forEach((element) => {
+/*           console.log(
+            element.valor,
+            parseFloat(element.valor.replace(",", ".")),
+            total
+          ); */
+          total =
+            element.tipo == "R"
+              ? total + parseFloat(element.valor.replace(",", "."))
+              : total - parseFloat(element.valor.replace(",", "."));
+        });
+        total = total.toFixed(2);
+        res.render("lancamento", { rows, total, ban, ope, ent, cat });
       } else {
         console.log(err);
       }
-      console.log("The data from lancamentos table: \n", qry, rows);
+      console.log("The data from find lancamentos table: lanca\n", linhas);
     }
   );
+  // connection.end();
 };
 
-exports.form = (req, res) => {
+exports.form = async (req, res) => {
   var catrows, pesrows, banrows, operows;
   let arLanca = new Object();
 
-  connection.query(
+  await connection.query(
     `SELECT date_format(emissao,'%Y-%m-%d') femissao, date_format(vencimento_em,'%Y-%m-%d') fvencimento_em, lancamentos.* 
     FROM lancamentos WHERE 1=1 AND id = 0;
     SELECT * FROM categorias WHERE status = 'active' ORDER BY descricao;
@@ -98,10 +202,10 @@ exports.form = (req, res) => {
   SELECT * FROM operacoes WHERE status = 'active' ORDER BY descricao;`,
     (err, rows) => {
       if (!err) {
-        catrows = rows[0];
+/*         catrows = rows[0];
         pesrows = rows[1];
         banrows = rows[2];
-        operows = rows[3];
+        operows = rows[3]; */
         arLanca = [
           [
             {
@@ -138,10 +242,11 @@ exports.form = (req, res) => {
       }
     }
   );
+  // connection.end();
 };
 
 // Add new lancamento
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const {
     tipo,
     categoria,
@@ -183,7 +288,7 @@ exports.create = (req, res) => {
   console.log(tipo, vencimentoEm, Date(), qryBanco);
 
   // lancamentos the connection
-  connection.query(
+  await connection.query(
     `INSERT INTO lancamentos SET tipo = ?, cat_id = ?, pes_id = ?, banco_id = ?, ope_id = ?,
     emissao = ?, valor = ?, vencimento_em = ?, descricao = ?, id_origem = ?; ${qryBanco}`,
     [
@@ -206,19 +311,20 @@ exports.create = (req, res) => {
       } else {
         console.log(err);
       }
-      console.log("The data from lancamentos table: \n", rows);
+      console.log("The data from form lancamentos table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Edit lancamento
-exports.edit = (req, res) => {
+exports.edit = async (req, res) => {
   let arLanca = new Object();
 
   // lancamentos the connection
-  connection.query(
+  await connection.query(
     `SELECT date_format(emissao,'%Y-%m-%d') femissao, date_format(vencimento_em,'%Y-%m-%d') fvencimento_em, lan.id, 
-    IF(lan.tipo='R','RECEITA','DESPESA') tipo, lan.descricao lanca_desc, 
+  lan.tipo, lan.descricao lanca_desc, 
   date_format(lan.emissao,'%d/%m/%Y') emissao, FORMAT(lan.valor,2,'de_DE') valor, 
   date_format(lan.vencimento_em,'%d/%m/%Y') vencimento_em, lan.pago_em, 
   cat.descricao nome_categoria, pes.nome nome_pessoa, pes.tipo tipo_pessoa, 
@@ -241,29 +347,48 @@ exports.edit = (req, res) => {
             error: `A operação deste lançamento ${req.params.id} não permite alterações !`,
           });
         } else {
+          currentRec = rows[0];
           arLanca = [rows[0], rows[1], rows[2], rows[3], rows[4]];
           res.render("edit-lanca", { arLanca });
         }
       } else {
         console.log(err);
       }
-      console.log("The data from lancamentos table: \n", arLanca);
+      console.log("The data from edit lancamentos table: \n", arLanca);
     }
   );
+  // connection.end();
 };
 
 // Update Lanca
-exports.update = (req, res) => {
-  const { emissao, categoria, pessoa, descricao, vencimento_em, origem_id } =
-    req.body;
+exports.update = async (req, res) => {
+  let qryBanco = "";
+  let qryEstorno = "";
 
-  console.log(
+  const {
+    tipo,
     emissao,
-    categoria.value,
-    pessoa.value,
+    categoria,
+    pessoa,
+    banco,
     descricao,
-    vencimento_em.date,
-    origem_id.value
+    operacao,
+    valor,
+    vencimento_em,
+    origem_id,
+  } = req.body;
+
+  let objcurrentRec = currentRec[0];
+
+  console.log(">>>>>>>>> currentRec <<<<<<<<<<", banco, operacao);
+  console.log(
+    // emissao,
+    // categoria.value,
+    // pessoa.value,
+    // descricao,
+    // vencimento_em.date,
+    // origem_id.value
+    objcurrentRec
   );
 
   let pessoa_id = pessoa === "" ? 0 : pessoa;
@@ -274,16 +399,65 @@ exports.update = (req, res) => {
     res.render("edit-lanca", { error: "Faltando informações." });
     return;
   }
+  console.log(
+    objcurrentRec.tipo,
+    tipo,
+    objcurrentRec.banco_id,
+    banco,
+    objcurrentRec.ope_id,
+    operacao,
+    objcurrentRec.valor,
+    valor
+  );
+
+  if (
+    objcurrentRec.tipo !== tipo ||
+    objcurrentRec.banco_id !== banco ||
+    objcurrentRec.ope_id !== operacao ||
+    parseFloat(objcurrentRec.valor.replace(",", ".")) !== valor
+  ) {
+    if (objcurrentRec.ope_id == 1) {
+      qryEstorno = `UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${
+        objcurrentRec.tipo == "R" ? "-" : "+"
+      } ${parseFloat(objcurrentRec.valor.replace(",", "."))} WHERE id = ${
+        objcurrentRec.banco_id
+      } AND status = 'active';`;
+    }
+    if (operacao == 1) {
+      qryBanco = `UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${
+        tipo == "R" ? "+" : "-"
+      } ${valor} WHERE id = ${banco} AND status = 'active';`;
+    }
+  }
 
   // lancamentos the connection
-  connection.query(
-    "UPDATE lancamentos SET emissao = ?, cat_id = ?, pes_id = ?, descricao = ?, vencimento_em = ?, id_origem = ? WHERE id = ?",
+  await connection.query(
+    `START TRANSACTION; ${qryEstorno}
+    UPDATE lancamentos SET 
+    tipo = ?, 
+    emissao = ?, 
+    cat_id = ?, 
+    pes_id = ?, 
+    banco_id = ?, 
+    descricao = ?, 
+    ope_id = ?, 
+    vencimento_em = ?, 
+    valor = ?, 
+    id_origem = ? 
+    WHERE id = ? 
+    AND status = 'active';
+    ${qryBanco}
+    COMMIT;`,
     [
+      tipo,
       emissao,
       categoria,
       pessoa_id,
+      banco,
       descricao,
+      operacao,
       vencimentoEm,
+      valor,
       id_origem,
       req.params.id,
     ],
@@ -304,19 +478,20 @@ exports.update = (req, res) => {
             } else {
               console.log(err);
             }
-            console.log("The data from lancamentos table: \n", rows);
+            console.log("The data from update lancamentos table: \n", rows);
           }
         );
       } else {
         console.log(err);
       }
-      console.log("The data from lancamentos table: \n", rows);
+      console.log("The data from update lancamentos table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Delete Lanca
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   let lin = [];
   let mathOper = "";
 
@@ -335,70 +510,27 @@ exports.delete = (req, res) => {
   // });
 
   // Hide a record
-
-  connection.query(
+console.log(req.query, req.params, req.body)
+  await connection.query(
     `SELECT tipo, 
-            pes_id, 
-            cat_id, 
-            descricao, 
-            emissao, 
             valor, 
-            banco_id, 
-            vencimento_em, 
-            (SELECT saldo FROM bancos WHERE id=banco_id) saldo, 
-            ope_id, 
-            id id_origem 
+            banco_id
         FROM lancamentos WHERE id = ?`,
     [req.params.id],
     (err, rows) => {
-      lin = rows[0];
-      console.log("ope_id => " + lin.ope_id);
-      if (lin.ope_id === 3) {
-        res.render("view-lancamento", rows, {
-          error: `Situação do Lançamento não permite esta operação.`,
-        });
-        return;
-      }
-      mathOper = lin.tipo === "R" ? "-" : "+";
       if (!err) {
-        console.log(
-          lin.tipo,
-          lin.pes_id,
-          lin.cat_id,
-          lin.descricao,
-          lin.emissao,
-          lin.valor,
-          lin.banco_id,
-          lin.vencimento_em,
-          lin.saldo_anterior,
-          lin.operacao,
-          lin.id_origem,
-          lin.valor,
-          lin.banco_id
-        );
+        lin = rows[0];
+        mathOper = lin.tipo === "R" ? "-" : "+";
         connection.query(
-          `start transaction; INSERT INTO lancamentos (tipo, pes_id, cat_id, descricao, emissao, valor, banco_id, vencimento_em, saldo_anterior, ope_id, id_origem ) VALUES (
-            ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?); UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${mathOper} ? WHERE id = ?; UPDATE lancamentos SET ope_id = 4 WHERE id = ?; commit;`,
+          `start transaction; UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${mathOper} ? WHERE id = ?; UPDATE lancamentos SET status = ? WHERE id = ?; commit;`,
           [
-            lin.tipo === "R" ? "D" : "R",
-            lin.pes_id,
-            lin.cat_id,
-            lin.descricao,
-            lin.valor,
-            lin.banco_id,
-            lin.vencimento_em,
-            lin.saldo_anterior,
-            3,
-            lin.id_origem,
-            lin.valor,
-            lin.banco_id,
-            lin.id_origem,
+            lin.valor, lin.banco_id, 'removed', req.params.id, 
           ],
           (err, rows) => {
             if (!err) {
-              console.log("The res from insert lancamentos table: \n", res);
+              // console.log("The res from delete lancamentos table: \n", res);
               res.render("view-lancamento", {
-                alert: `Estorno realizado.`,
+                alert: `Exclusão realizada.`,
               });
             } else {
               console.log(err);
@@ -409,21 +541,25 @@ exports.delete = (req, res) => {
       } else {
         console.log(err);
       }
-      console.log("The data from lancamentos table: \n", rows);
+      console.log("The data from delete lancamentos table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // View lancamentos
-exports.viewall = (req, res) => {
+exports.viewall = async (req, res) => {
   // lancamentos the connection
-  connection.query(
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+  console.log(req.body)
+await connection.query(
     `SELECT lan.id, lan.tipo, lan.descricao lanca_desc, 
   date_format(lan.emissao,'%d/%m/%Y') emissao, FORMAT(lan.valor,2,'de_DE') valor, 
   date_format(lan.vencimento_em,'%d/%m/%Y') vencimento_em, lan.pago_em, 
   cat.descricao nome_categoria, pes.nome nome_pessoa, pes.tipo tipo_pessoa, 
   ban.nome nome_banco, ban.saldo_anterior, ban.saldo, ope.descricao descricao_ope,
-  lan.id_origem, lan.saldo_anterior, lan.operacao, lan.ope_id
+  lan.id_origem, lan.saldo_anterior, lan.operacao, lan.ope_id, lan.pago_em, lan.banco_id, 
+  date_format(lan.pago_em,'%d/%m/%Y %H:%i') pago_em
   FROM lancamentos lan 
   LEFT JOIN categorias cat ON cat.id = lan.cat_id  
   LEFT JOIN pessoas pes ON pes.id = lan.pes_id  
@@ -436,7 +572,32 @@ exports.viewall = (req, res) => {
       } else {
         console.log(err);
       }
-      console.log("The data from lancamentos table: \n", rows);
+      console.log("The data from viewall lancamentos table: \n", rows);
     }
   );
+  // connection.end();
 };
+
+exports.baixar = async (req, res) => {
+  // lancamentos the connection
+  pago = req.query.pg
+  tipo = req.query.tp == 'R' ? '+' : '-';
+  valor = parseFloat(req.query.v.replace(",", "."))
+  console.log(tipo, req.query.v,req.query.b, !pago);
+  if(!pago){
+  await connection.query(`START TRANSACTION; UPDATE lancamentos SET pago_em = NOW() WHERE 1=1 AND status='active' AND id=?; 
+    UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${tipo} ${valor} WHERE id = ${req.query.b}; COMMIT;`,
+    [req.params.id],
+    (err, rows) => {
+      if (!err) {
+        res.render("view-lancamento", { alert: "Baixa realizada com sucesso!" });
+      } else {
+        console.log(err);
+      }
+      console.log("The data from baixar lancamentos table: \n", rows);
+    }
+  );
+} else{
+  res.render("view-lancamento", { error: "Lançamento já está baixado!." });
+}
+ }

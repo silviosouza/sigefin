@@ -11,9 +11,9 @@ let connection = mysql.createConnection({
 });
 
 // View Categoria
-exports.view = (req, res) => {
+exports.view = async (req, res) => {
   // Categorias the connection
-  connection.query(
+  await connection.query(
     'SELECT * FROM categorias WHERE 1=1 AND status = "active" ORDER BY descricao',
     (err, rows) => {
       // When done with the connection, release it
@@ -26,13 +26,14 @@ exports.view = (req, res) => {
       console.log("The data from categorias table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Find Categoria by Search
-exports.find = (req, res) => {
+exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   // User the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM categorias WHERE 1=1 AND status='active' AND descricao LIKE ? ",
     ["%" + searchTerm + "%"],
     (err, rows) => {
@@ -44,14 +45,15 @@ exports.find = (req, res) => {
       console.log("The data from categorias table: \n", rows);
     }
   );
+  // connection.end();
 };
 
-exports.form = (req, res) => {
+exports.form = async (req, res) => {
   res.render("add-categoria");
 };
 
 // Add new categoria
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const { descricao } = req.body;
 
   if (descricao.length < 1) {
@@ -60,7 +62,7 @@ exports.create = (req, res) => {
   }
 
   // verica se já existe
-  connection.query(
+  await connection.query(
     `SELECT * FROM categorias WHERE 1=1 AND descricao = ? AND status = "active";`,
     [descricao],
     (err, rows) => {
@@ -90,12 +92,13 @@ exports.create = (req, res) => {
       console.log("The data from categorias table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Edit categoria
-exports.edit = (req, res) => {
+exports.edit = async (req, res) => {
   // Categorias the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM categorias WHERE 1=1 AND status='active' AND id = ?",
     [req.params.id],
     (err, rows) => {
@@ -107,10 +110,11 @@ exports.edit = (req, res) => {
       console.log("The data from categorias table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Update Categoria
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const { descricao } = req.body;
 
   if (descricao.length < 1) {
@@ -119,7 +123,7 @@ exports.update = (req, res) => {
   }
 
   // Categorias the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM categorias WHERE 1=1 AND status='active' AND descricao = ? AND id <> ?",
     [descricao, req.params.id],
     (err, rows) => {
@@ -160,14 +164,15 @@ exports.update = (req, res) => {
       console.log("The data from categorias table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Delete Categoria
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   // Delete a record
 
   // User the connection
-  // connection.query('DELETE FROM user WHERE 1=1 AND  id = ?', [req.params.id], (err, rows) => {
+  // await connection.query('DELETE FROM user WHERE 1=1 AND  id = ?', [req.params.id], (err, rows) => {
 
   //   if(!err) {
   //     res.redirect('/');
@@ -181,7 +186,7 @@ exports.delete = (req, res) => {
   // Hide a record
 
   // Veifica integridade
-  connection.query(
+  await connection.query(
     `SELECT COUNT(*) FROM lancamentos WHERE cat_id = ?;`,
     [req.params.id],
     (err, rows) => {
@@ -218,12 +223,13 @@ exports.delete = (req, res) => {
       console.log("The data from beer table are: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // View Categorias
-exports.viewall = (req, res) => {
+exports.viewall = async (req, res) => {
   // Categorias the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM categorias WHERE 1=1 AND status = 'active' AND id = ?",
     [req.params.id],
     (err, rows) => {
@@ -235,4 +241,5 @@ exports.viewall = (req, res) => {
       console.log("The data from categorias table: \n", rows);
     }
   );
+  // connection.end();
 };

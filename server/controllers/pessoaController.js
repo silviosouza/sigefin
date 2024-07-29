@@ -11,9 +11,9 @@ let connection = mysql.createConnection({
 });
 
 // View Pessoa
-exports.view = (req, res) => {
+exports.view = async (req, res) => {
   // pessoas the connection
-  connection.query(
+  await connection.query(
     'SELECT * FROM pessoas WHERE 1=1 AND  status = "active" ORDER BY nome',
     (err, rows) => {
       // When done with the connection, release it
@@ -26,13 +26,14 @@ exports.view = (req, res) => {
       console.log("The data from pessoas table: \n", rows);
     }
   );
+  // await connection.end();
 };
 
 // Find Pessoa by Search
-exports.find = (req, res) => {
+exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   // User the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM pessoas WHERE 1=1 AND  nome LIKE ? ",
     ["%" + searchTerm + "%"],
     (err, rows) => {
@@ -46,12 +47,12 @@ exports.find = (req, res) => {
   );
 };
 
-exports.form = (req, res) => {
+exports.form = async (req, res) => {
   res.render("add-pessoa");
 };
 
 // Add new pessoa
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   const { nome, tipo } = req.body;
 
   if (nome.length < 1 || tipo.length < 1) {
@@ -60,39 +61,44 @@ exports.create = (req, res) => {
   }
 
   // verica se já existe
-  connection.query(
-    `SELECT * FROM pessoas WHERE 1=1 AND  nome = ? AND status = "active";`,
+  await connection.query(
+    `SELECT * FROM pessoas WHERE 1=1 AND nome = ? AND status = "active";`,
     [nome],
     (err, rows) => {
-      if (rows.length > 0) {
-        res.render("add-pessoa", { rows, error: nome + " já existe !" });
-        return;
-      } else {
-        // pessoas the connection
-        connection.query(
-          "INSERT INTO pessoas SET nome = ?,  tipo = ?",
-          [nome, tipo],
-          (err, rows) => {
-            if (!err) {
-              res.render("add-pessoa", {
-                rows,
-                alert: `Pessoa ${nome} adicionada com sucesso !.`,
-              });
-            } else {
-              res.render("add-pessoa", { rows, error: err.sqlMessage });
+      if (!err) {
+        if (rows.length > 0) {
+          res.render("add-pessoa", { rows, error: nome + " já existe !" });
+          return;
+        } else {
+          // pessoas the connection
+          connection.query(
+            "INSERT INTO pessoas SET nome = ?,  tipo = ?",
+            [nome, tipo],
+            (err, rows) => {
+              if (!err) {
+                res.render("add-pessoa", {
+                  rows,
+                  alert: `Pessoa ${nome} adicionada com sucesso !.`,
+                });
+              } else {
+                res.render("add-pessoa", { rows, error: err.sqlMessage });
+              }
+              console.log("The data from pessoas table: \n", rows);
             }
-            console.log("The data from pessoas table: \n", rows);
-          }
-        );
+          );
+        }
+      } else {
+        res.render("add-pessoa", { rows, error: err.sqlMessage });
       }
     }
   );
+  // connection.end();
 };
 
 // Edit pessoa
-exports.edit = (req, res) => {
+exports.edit = async (req, res) => {
   // pessoas the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM pessoas WHERE 1=1 AND  id = ?",
     [req.params.id],
     (err, rows) => {
@@ -104,10 +110,11 @@ exports.edit = (req, res) => {
       console.log("The data from pessoas table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Update Pessoa
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const { nome, tipo } = req.body;
 
   if (nome.length < 1 || tipo.length < 1) {
@@ -116,7 +123,7 @@ exports.update = (req, res) => {
   }
 
   // pessoas the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM pessoas WHERE 1=1 AND  id <> ? AND nome = ? AND status = 'active'",
     [req.params.id],
     (err, rows) => {
@@ -150,10 +157,11 @@ exports.update = (req, res) => {
       console.log("The data from pessoas table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Delete Pessoa
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   // Delete a record
 
   // User the connection
@@ -171,7 +179,7 @@ exports.delete = (req, res) => {
   // Hide a record
 
   // Veifica integridade
-  connection.query(
+  await connection.query(
     `SELECT COUNT(*) FROM lancamentos WHERE pes_id = ?;`,
     [req.params.id],
     (err, rows) => {
@@ -207,12 +215,13 @@ exports.delete = (req, res) => {
       console.log("The data from beer table are: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // View pessoas
-exports.viewall = (req, res) => {
+exports.viewall = async (req, res) => {
   // pessoas the connection
-  connection.query(
+  await connection.query(
     "SELECT * FROM pessoas WHERE 1=1 AND  id = ?",
     [req.params.id],
     (err, rows) => {
@@ -224,4 +233,5 @@ exports.viewall = (req, res) => {
       console.log("The data from pessoas table: \n", rows);
     }
   );
+  // connection.end();
 };

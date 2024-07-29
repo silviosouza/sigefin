@@ -26,6 +26,7 @@ exports.view = (req, res) => {
       console.log("The data from operacoes table: \n", rows);
     }
   );
+  connection.end();
 };
 
 // Find Banco by Search

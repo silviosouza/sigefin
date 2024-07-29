@@ -1,134 +1,248 @@
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestor Financeiro</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestor Financeiro</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+<link rel="apple-touch-icon" sizes="57x57" href="/images/favicon_io/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/images/favicon_io/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/images/favicon_io/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/images/favicon_io/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/images/favicon_io/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/images/favicon_io/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/images/favicon_io/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/images/favicon_io/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/favicon_io/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="/images/favicon_io/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon_io/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon_io/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon_io/favicon-16x16.png">
+<link rel="manifest" href="/images/favicon_io/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
 </head>
 
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bg-body-tertiary mb-1">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">Gestor Financeiro</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0 list-inline">
-          <li class="nav-item list-inline-item"><a class="nav-link" aria-current="page" href="/">Home</a></li>
-          <li class="nav-item list-inline-item"><a class="nav-link" href="/lanca">Lançamentos</a></li>
-          <li class="nav-item list-inline-item"><a aria-disabled="true" class="nav-link disabled" href="/careceber">Contas a receber</a></li>
-          <li class="nav-item list-inline-item"><a aria-disabled="true" class="nav-link disabled" href="/capagar">Contas a pagar</a></li>
-          <li class="nav-item list-inline-item"><a class="nav-link" href="/categoria">Categorias</a></li>
-          <li class="nav-item list-inline-item"><a class="nav-link" href="/pessoa">Pessoas</a></li>
-          <li class="nav-item list-inline-item"><a class="nav-link" href="/banco">Bancos</a></li>
-          <li class="nav-item list-inline-item"><a class="nav-link" href="/user">Usuários</a></li>
-          {{!-- <li class="nav-item list-inline-item"><a class="nav-link" href="/ope">Operações</a></li> --}}
-        </ul>
+  <body">
+    <nav
+      class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bg-body-tertiary mb-1"
+    >
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Gestor Financeiro</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 list-inline">
+            <li class="nav-item list-inline-item"><a
+                class="nav-link"
+                aria-current="page"
+                href="/"
+              >Home</a></li>
+            <li class="nav-item list-inline-item"><a
+                class="nav-link"
+                href="/lanca"
+              >Lançamentos</a></li>
+            <li class="nav-item list-inline-item"><a
+                aria-disabled="true"
+                class="nav-link disabled"
+                href="/careceber"
+              >Contas a receber</a></li>
+            <li class="nav-item list-inline-item"><a
+                aria-disabled="true"
+                class="nav-link disabled"
+                href="/capagar"
+              >Contas a pagar</a></li>
+            <li class="nav-item list-inline-item"><a
+                class="nav-link"
+                href="/categoria"
+              >Categorias</a></li>
+            <li class="nav-item list-inline-item"><a
+                class="nav-link"
+                href="/pessoa"
+              >Entidades</a></li>
+            <li class="nav-item list-inline-item"><a
+                class="nav-link"
+                href="/banco"
+              >Bancos</a></li>
+            <li class="nav-item list-inline-item"><a
+                class="nav-link"
+                href="/user"
+              >Usuários</a></li>
+            {{! <li class="nav-item list-inline-item"><a class="nav-link" href="/ope">Operações</a></li> }}
+            <li class="nav-item list-inline-item"><a class="nav-link" href="">Sair</a></li>
+          </ul>
 
+        </div>
+      </div>
+    </nav>
+
+    <div id="dbInfo">
+
+    </div>
+
+    <div class="container pt-1 pb-1">
+      {{{body}}}
+
+      <!-- Button trigger modal -->
+      <button
+        id="open-modal"
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+        hidden
+      >
+        Launch demo modal
+      </button>
+
+      <button
+        id="open-confirmModal"
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#confirmModal"
+        hidden
+      >
+        Launch demo modal
+      </button>
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+              ...
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                id="btn-close"
+              >Close</button>
+              {{! <button type="button" class="btn btn-primary">Save changes</button> }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </nav>
 
-  <div class="container pt-1 pb-1">
-    {{{body}}}
-
-    <!-- Button trigger modal -->
-    <button id="open-modal" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-      hidden>
-      Launch demo modal
-    </button>
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Confirm Modal -->
+    <div
+      class="modal fade"
+      id="confirmModal"
+      tabindex="-1"
+      aria-labelledby="confirmModalLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h1 class="modal-title fs-5" id="confirmModalLabel">Confirmar</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
-          <div class="modal-body" id="modalBody">
-            ...
+          <div class="modal-body" id="confirmModalBody">
+
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="btn-close">Close</button>
-            {{! <button type="button" class="btn btn-primary">Save changes</button> }}
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >Não</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="btn-onclickConfirm"
+              onclick="window.location = document.querySelector('#userDeletar').dataset.rota"
+            >Confirme</button>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Confirm Modal -->
-  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="confirmModalLabel">Confirmar</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="confirmModalBody">
-          
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
-          <button type="button" class="btn btn-primary" id="btn-onclickConfirm"
-            onclick="window.location = document.querySelector('#userDeletar').dataset.rota">Confirme</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+      crossorigin="anonymous"
+    >
     </script>
-</body>
+  </body>
 
-<script>
+  <script>
 
-  function eventFire(el, etype) {
-    if (el.fireEvent) {
-      el.fireEvent('on' +
-        etype);
-    } else {
-      var evObj = document.createEvent('Events');
-      evObj.initEvent(etype, true, false); el.dispatchEvent(evObj);
-    }
-  };
-  
-   function myFunction(x, y) {
-      const x_tipo = document.getElementById(x); const y_tipo =
-        document.getElementById(y); if (!x_tipo.checked && !y_tipo.checked) {
-          abreModal('exampleModalLabel', 'modalBody', 'Faltando dados !', 'Selecione o Tipo de lançamento (Despesa ou Receita?) .', 'Ok',
-            'open-modal');
-        }
-  };
-  
-   function abreModal(idh, idb, h, b, bl, __modal) {
-    const _h = document.getElementById(idh); 
-    const _b = document.getElementById(idb); 
-    const _bl = document.getElementById('btn-close'); 
-    const _modal = document.getElementById(__modal); 
-    _h.innerHTML = h; 
-    _b.innerHTML = b; 
-    _bl.innerHTML = bl; 
-    eventFire(_modal, 'click')
-  };
+    {{! require('helper') }}
 
-    document.getElementById("lancaApagar").addEventListener('click', () => {
-    const lancaDeletar = document.getElementById("lancaApagar");
-    let btn_onclickConfirm = document.getElementById("btn-onclickConfirm");
-    btn_onclickConfirm.attributes['onclick'].value = "window.location = document.querySelector('#lancaApagar').dataset.rota";
-    console.log(btn_onclickConfirm.attributes['onclick'].value);
-    abreModal('confirmModalLabel','confirmModalBody','Estornar lançamento', `Confirma estornar
-          ${lancaDeletar.dataset.nome} ?`,'OK','confirmModal')
-  })
+    function eventFire(el, etype) { 
+      if (el.fireEvent) { 
+        el.fireEvent('on' + etype); 
+      } else { 
+        var evObj = document.createEvent('Events');
+        evObj.initEvent(etype, true, false); 
+        el.dispatchEvent(evObj); 
+      } 
+    }; 
 
- </script>
+    function myFunction(x, y) { 
+      const x_tipo = document.getElementById(x); 
+      const y_tipo = document.getElementById(y); 
+      if (!x_tipo.checked && !y_tipo.checked) {
+        abreModal('exampleModalLabel', 'modalBody', 'Faltando dados !', 'Selecione o Tipo de lançamento (Despesa ou Receita?) .', 'Ok', 'open-modal'); 
+      } 
+    };
+
+    function abreModal(idh, idb, h, b, bl, __modal) { 
+      const _h = document.getElementById(idh); 
+      const _b = document.getElementById(idb); 
+      const _bl = document.getElementById('btn-close'); 
+      const _modal = document.getElementById(__modal); 
+      _h.innerHTML = h; 
+      _b.innerHTML = b;
+      _bl.innerHTML = bl; 
+      eventFire(_modal, 'click') 
+    };
+    
+
+  </script>
 
 </html>

@@ -11,9 +11,9 @@ let connection = mysql.createConnection({
 });
 
 // View Banco
-exports.view = (req, res) => {
+exports.view = async (req, res) => {
   // bancos the connection
-  connection.query(
+  await  connection.query(
     'SELECT id, nome, FORMAT(saldo_anterior,2,"de_DE") saldo_anterior, FORMAT(saldo,2,"de_DE") saldo FROM bancos WHERE 1=1 AND  status = "active" ORDER BY nome',
     (err, rows) => {
       // When done with the connection, release it
@@ -26,13 +26,14 @@ exports.view = (req, res) => {
       console.log("The data from bancos table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Find Banco by Search
-exports.find = (req, res) => {
+exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   // User the connection
-  connection.query(
+  await  connection.query(
     'SELECT id, nome, FORMAT(saldo_anterior,2,"de_DE") saldo_anterior, FORMAT(saldo,2,"de_DE") saldo FROM bancos WHERE 1=1 AND  status = "active" AND nome LIKE ? ',
     ["%" + searchTerm + "%"],
     (err, rows) => {
@@ -44,14 +45,15 @@ exports.find = (req, res) => {
       console.log("The data from bancos table: \n", rows);
     }
   );
+  // connection.end();
 };
 
-exports.form = (req, res) => {
+exports.form = async (req, res) => {
   res.render("add-banco");
 };
 
 // Add new banco
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   let { nome, saldo_anterior, saldo } = req.body;
   let erro_msg;
 
@@ -65,7 +67,7 @@ exports.create = (req, res) => {
   saldo_anterior = saldo_anterior === "" ? 0 : saldo_anterior;
 
   // verica se já existe
-  connection.query(
+  await  connection.query(
     `SELECT * FROM bancos WHERE 1=1 AND  nome = ? AND status = "active";`,
     [nome],
     (err, rows) => {
@@ -91,12 +93,13 @@ exports.create = (req, res) => {
       }
     }
   );
+  // connection.end();
 };
 
 // Edit banco
-exports.edit = (req, res) => {
+exports.edit = async (req, res) => {
   // bancos the connection
-  connection.query(
+  await  connection.query(
     "SELECT * FROM bancos WHERE 1=1 AND  id = ? AND status = 'active'",
     [req.params.id],
     (err, rows) => {
@@ -111,7 +114,7 @@ exports.edit = (req, res) => {
 };
 
 // Update Banco
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
   const { nome, saldo_anterior, saldo } = req.body;
 
   if (nome.length < 1) {
@@ -120,7 +123,7 @@ exports.update = (req, res) => {
   }
 
   // bancos the connection
-  connection.query(
+  await  connection.query(
     "SELECT * FROM bancos WHERE 1=1 AND  nome = ? AND status = 'active' AND id <> ?",
     [nome, req.params.id],
     (err, rows) => {
@@ -154,14 +157,15 @@ exports.update = (req, res) => {
       console.log("The data from bancos table: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // Delete Banco
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
   // Delete a record
 
   // User the connection
-  // connection.query('DELETE FROM user WHERE 1=1 AND  id = ?', [req.params.id], (err, rows) => {
+  // await  connection.query('DELETE FROM user WHERE 1=1 AND  id = ?', [req.params.id], (err, rows) => {
 
   //   if(!err) {
   //     res.redirect('/');
@@ -175,7 +179,7 @@ exports.delete = (req, res) => {
   // Hide a record
 
   // Veifica integridade
-  connection.query(
+  await  connection.query(
     `SELECT COUNT(*) FROM lancamentos WHERE banco_id = ?;`,
     [req.params.id],
     (err, rows) => {
@@ -210,12 +214,13 @@ exports.delete = (req, res) => {
       console.log("The data from beer table are: \n", rows);
     }
   );
+  // connection.end();
 };
 
 // View bancos
-exports.viewall = (req, res) => {
+exports.viewall = async (req, res) => {
   // bancos the connection
-  connection.query(
+  await  connection.query(
     'SELECT id, nome, FORMAT(saldo_anterior,2,"de_DE") saldo_anterior, FORMAT(saldo,2,"de_DE") saldo FROM bancos WHERE 1=1 AND  id = ?',
     [req.params.id],
     (err, rows) => {
@@ -227,4 +232,5 @@ exports.viewall = (req, res) => {
       console.log("The data from bancos table: \n", rows);
     }
   );
+  // connection.end();
 };
