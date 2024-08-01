@@ -99,7 +99,7 @@ exports.create = async (req, res) => {
 exports.edit = async (req, res) => {
   // pessoas the connection
   await connection.query(
-    "SELECT * FROM pessoas WHERE 1=1 AND  id = ?",
+    "SELECT * FROM pessoas WHERE 1=1 AND id = ? AND status='active'",
     [req.params.id],
     (err, rows) => {
       if (!err) {
@@ -124,8 +124,8 @@ exports.update = async (req, res) => {
 
   // pessoas the connection
   await connection.query(
-    "SELECT * FROM pessoas WHERE 1=1 AND  id <> ? AND nome = ? AND status = 'active'",
-    [req.params.id],
+    "SELECT * FROM pessoas WHERE 1=1 AND id <> ? AND nome = ? AND status = 'active'",
+    [req.params.id, nome],
     (err, rows) => {
       if (!err) {
         // When done with the connection, release it
