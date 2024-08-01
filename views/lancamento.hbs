@@ -402,7 +402,7 @@
   </div>
 </div>
 
-<div class="table-responsive-sm tabela">
+<div class="table-responsive-sm">
   <table class="table table-bordered table-striped">
     <thead class="thead-dark">
       <tr>
@@ -411,7 +411,7 @@
         <th scope="col">Categoria</th>
         <th scope="col">Entidade</th>
         <th scope="col">Descrição</th>
-        <th scope="col" class="text-end">Valor</th>
+        <th scope="col" class="text-end">Valor do Lançamento</th>
         <th scope="col">Emissão</th>
         <th scope="col">Vencimento</th>
         <th scope="col">Quitado em</th>
@@ -431,7 +431,7 @@
           <td>{{this.nome_categoria}}</td>
           <td>{{this.nome_pessoa}}</td>
           <td>{{this.lanca_desc}}</td>
-          <td class="text-end">{{this.valor}}</td>
+          <td class="text-end">{{this.fvalor}}</td>
           <td>{{this.emissao}}</td>
           <td>{{this.vencimento_em}}</td>
           <td>{{this.pago_em}}</td>
@@ -464,10 +464,20 @@
     </tbody>
     <tfoot>
       <tr>
-        <td></td><td></td><td></td><td></td>
-        <th scope="row" class="text-end">Total</th>
-        <td>{{total}}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <th scope="row" class="text-end">Valor Total</th>
+        <td class="text-end">{{total}}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
       </tr>
     </tfoot>
   </table>
