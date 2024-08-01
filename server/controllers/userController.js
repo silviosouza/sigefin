@@ -29,9 +29,9 @@ exports.view = async  (req, res) => {
       // When done with the connection, release it
       if (!err) {
         let removedUser = req.query.removed;
-        res.render("user", { rows, removedUser });
+        res.render("user", { rows, removedUser, session : req.session });
       } else {
-        res.render("user", { error: err.sqlMessage });
+        res.render("user", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from user table: \n", rows);
     }
@@ -48,9 +48,9 @@ exports.find = async  (req, res) => {
     ["%" + searchTerm + "%"],
     (err, rows) => {
       if (!err) {
-        res.render("user", { rows });
+        res.render("user", { rows, session : req.session });
       } else {
-        res.render("user", { error: err.sqlMessage });
+        res.render("user", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from user table: \n", rows);
     }
@@ -59,7 +59,7 @@ exports.find = async  (req, res) => {
 };
 
 exports.form = async  (req, res) => {
-  res.render("add-user");
+  res.render("add-user", {session : req.session});
 };
 
 // Add new user
@@ -74,7 +74,7 @@ exports.create = async (req, res) => {
     !password ||
     password.length < 8
   ) {
-    res.render("add-user", { error: "Favor preencher todos os campos" });
+    res.render("add-user", { error: "Favor preencher todos os campos", session : req.session });
     return;
   }
 
@@ -89,7 +89,7 @@ exports.create = async (req, res) => {
       if (!err) {
         if (rows.length > 0) {
           res.render("add-user", {
-            error: `${name} e/ou ${email} já existe !`,
+            error: `${name} e/ou ${email} já existe !`, session : req.session
           });
           return;
         } else {
@@ -101,17 +101,17 @@ exports.create = async (req, res) => {
             (err, rows) => {
               if (!err) {
                 res.render("add-user", {
-                  alert: `Usuário ${name} adicionado com sucesso.`,
+                  alert: `Usuário ${name} adicionado com sucesso.`, session : req.session
                 });
               } else {
                 console.log(err);
-                res.render("add-user", { error: err.sqlMessage });
+                res.render("add-user", { error: err.sqlMessage, session : req.session });
               }
             }
           );
         }
       } else {
-        res.render("add-user", { error: err.sqlMessage });
+        res.render("add-user", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from user table: \n", rows);
     }
@@ -127,9 +127,9 @@ exports.edit = async  (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("edit-user", { rows });
+        res.render("edit-user", { rows, session : req.session });
       } else {
-        res.render("user", { error: err.sqlMessage });
+        res.render("user", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from user table: \n", rows);
     }
@@ -140,6 +140,7 @@ exports.edit = async  (req, res) => {
 // Update User
 exports.update = async  (req, res) => {
   const { name, password, email } = req.body;
+  console.log(name, password, email)
   const emailRegexp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
@@ -149,7 +150,7 @@ exports.update = async  (req, res) => {
     !password ||
     password.length < 8
   ) {
-    res.render("add-user", { error: "Favor preencher todos os campos" });
+    res.render("edit-user", { error: "Favor preencher todos os campos", session : req.session });
     return;
   }
 
@@ -166,7 +167,7 @@ exports.update = async  (req, res) => {
       if (!err) {
         if (rows.length > 0) {
           rows,
-            res.render("edit-user", { error: `Usuário ${name} já existe !.` });
+            res.render("edit-user", { error: `Usuário ${name} já existe !.`, session : req.session });
           return;
         } else {
           // User the connection
@@ -177,16 +178,16 @@ exports.update = async  (req, res) => {
               if (!err) {
                 res.render("edit-user", {
                   // rows,
-                  alert: `${name} foi atualizado.`,
+                  alert: `${name} foi atualizado.`, session : req.session
                 });
               } else {
-                res.render("edit-user", { error: err.sqlMessage });
+                res.render("edit-user", { error: err.sqlMessage, session : req.session });
               }
             }
           );
         }
       } else {
-        res.render("edit-user", { error: err.sqlMessage });
+        res.render("edit-user", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from user table: \n", rows);
     }
@@ -222,7 +223,7 @@ exports.delete = async  (req, res) => {
         );
         res.redirect("/user?removed=" + removedUser);
       } else {
-        res.render("user", { error: err.sqlMessage });
+        res.render("user", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from beer table are: \n", rows);
     }
@@ -238,9 +239,9 @@ exports.viewall = async  (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("view-user", { rows });
+        res.render("view-user", { rows, session : req.session });
       } else {
-        res.render("user", { error: err.sqlMessage });
+        res.render("user", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from user table: \n", rows);
     }
@@ -250,7 +251,7 @@ exports.viewall = async  (req, res) => {
 
 
 // Login
-exports.login = async (req, res) => {
+/* exports.login = async (req, res) => {
   const {usuario, password} = req.body;
   res.render('login', {alert: `Olá ${usuario} - ${password}`})
-}
+} */

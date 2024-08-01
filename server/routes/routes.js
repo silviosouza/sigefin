@@ -1,4 +1,5 @@
 const express = require('express');
+const authController = require('../controllers/auth');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const categoriaController = require('../controllers/categoriaController');
@@ -58,7 +59,7 @@ router.get('/edituser/:id', userController.edit);
 router.post('/edituser/:id', userController.update);
 router.get('/viewuser/:id', userController.viewall);
 router.get('/deluser/:id',userController.delete);
-router.post('/login',userController.login);
+// router.post('/login',authController.login);
 
 // Operações
 router.get('/ope', opeController.view);
@@ -71,11 +72,16 @@ router.get('/viewope/:id', opeController.viewall);
 router.get('/delope/:id',opeController.delete); 
 
 
-router.get('/',function(req, res, next) {
-  res.render('home', {dbName: process.env.DB_NAME});
+router.get('/',(req, res, next) => {
+  console.log(req.session)
+  res.render('home', {
+    user: req.user,
+    dbName: process.env.DB_NAME,
+    session: req.session
+  });
 });
 
-router.get('/login',function(req, res, next) {
+router.get('/login',(req, res) => {
   res.render('login');
 });
 

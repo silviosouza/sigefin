@@ -19,9 +19,9 @@ exports.view = (req, res) => {
       // When done with the connection, release it
       if (!err) {
         let removedOpe = req.query.removed;
-        res.render("ope", { rows, removedOpe });
+        res.render("ope", { rows, removedOpe, session : req.session });
       } else {
-        res.render("ope", { error: err.sqlMessage });
+        res.render("ope", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from operacoes table: \n", rows);
     }
@@ -38,9 +38,9 @@ exports.find = (req, res) => {
     ["%" + searchTerm + "%"],
     (err, rows) => {
       if (!err) {
-        res.render("ope", { rows });
+        res.render("ope", { rows, session : req.session });
       } else {
-        res.render("ope", { error: err.sqlMessage });
+        res.render("ope", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from operacoes table: \n", rows);
     }
@@ -48,7 +48,7 @@ exports.find = (req, res) => {
 };
 
 exports.form = (req, res) => {
-  res.render("add-ope");
+  res.render("add-ope", {session : req.session});
 };
 
 // Add new banco
@@ -57,7 +57,7 @@ exports.create = (req, res) => {
   let erro_msg;
 
   if (descricao.length < 1) {
-    res.render("add-ope", { error: "Descrição não informada." });
+    res.render("add-ope", { error: "Descrição não informada.", session : req.session });
     return;
   }
 
@@ -69,7 +69,7 @@ exports.create = (req, res) => {
     [descricao],
     (err, rows) => {
       if (rows.length > 0) {
-        res.render("add-ope", { error: descricao + " já existe !" });
+        res.render("add-ope", { error: descricao + " já existe !", session : req.session });
         return;
       } else {
         // bancos the connection
@@ -79,10 +79,10 @@ exports.create = (req, res) => {
           (err, rows) => {
             if (!err) {
               res.render("add-ope", {
-                alert: `Operação ${descricao} adicionada com sucesso !.`,
+                alert: `Operação ${descricao} adicionada com sucesso !.`, session : req.session
               });
             } else {
-              res.render("add-ope", { error: err.sqlMessage });
+              res.render("add-ope", { error: err.sqlMessage, session : req.session });
             }
             console.log("The data from opercaoes table: \n", rows);
           }
@@ -100,9 +100,9 @@ exports.edit = (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("edit-ope", { rows });
+        res.render("edit-ope", { rows, session : req.session });
       } else {
-        res.render("edit-ope", { rows, error: err.sqlMessage });
+        res.render("edit-ope", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from operacoes table: \n", rows);
     }
@@ -114,7 +114,7 @@ exports.update = (req, res) => {
   const { descricao } = req.body;
 
   if (descricao.length < 1) {
-    res.render("edit-ope", { error: "Descrição não informado." });
+    res.render("edit-ope", { error: "Descrição não informado.", session : req.session });
     return;
   }
 
@@ -127,7 +127,7 @@ exports.update = (req, res) => {
 
       if (!err) {
         if (rows.length > 0) {
-          res.render("edit-ope", { rows, error: descricao + " já existe !" });
+          res.render("edit-ope", { rows, error: descricao + " já existe !", session : req.session });
           return;
         } else {
           // bancos the connection
@@ -138,17 +138,17 @@ exports.update = (req, res) => {
               if (!err) {
                 res.render("edit-ope", {
                   // rows,
-                  alert: `${descricao} foi atualizada.`,
+                  alert: `${descricao} foi atualizada.`, session : req.session
                 });
               } else {
-                res.render("edit-ope", { rows, error: err.sqlMessage });
+                res.render("edit-ope", { rows, error: err.sqlMessage, session : req.session });
               }
               console.log("The data from operacoes table: \n", rows);
             }
           );
         }
       } else {
-        res.render("edit-ope", { rows, error: err.sqlMessage });
+        res.render("edit-ope", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from operacoes table: \n", rows);
     }
@@ -181,7 +181,7 @@ exports.delete = (req, res) => {
       if (!err) {
         if (rows[0]["COUNT(*)"] > 0) {
           res.render("view-ope", {
-            error: `Impossível excluír Operação ID ${req.params.id}. Falha de integridade !.`,
+            error: `Impossível excluír Operação ID ${req.params.id}. Falha de integridade !.`, session : req.session
           });
           return;
         } else {
@@ -195,7 +195,7 @@ exports.delete = (req, res) => {
                 );
                 res.redirect("/ope/?removed=" + removedOpe);
               } else {
-                res.render("view-ope", { rows, error: err.sqlMessage });
+                res.render("view-ope", { rows, error: err.sqlMessage, session : req.session });
               }
               console.log("The data from beer table are: \n", rows);
             }
@@ -203,7 +203,7 @@ exports.delete = (req, res) => {
         }
       } else {
         res.render("view-ope", {
-          error: err.sqlMessage,
+          error: err.sqlMessage, session : req.session
         });
       }
       console.log("The data from beer table are: \n", rows);
@@ -219,9 +219,9 @@ exports.viewall = (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("view-ope", { rows });
+        res.render("view-ope", { rows, session : req.session });
       } else {
-        res.render("view-ope", { rows, error: err.sqlMessage });
+        res.render("view-ope", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from operacoes table: \n", rows);
     }

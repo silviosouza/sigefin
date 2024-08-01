@@ -1,22 +1,22 @@
 <main class="form-signin w-100 m-auto">
   <nav>
-        <h4>Node-MySql Login</h4>
-        <ul>
+        <h4 class="text-center">SIGEFIN</h4>
+{{!--         <ul>
             <li><a href="/">Inicio</a></li>
             <li><a href="/login">Entrar</a></li>
             <li><a href="/register">Registrar-se</a></li>
-        </ul>
+        </ul> --}}
     </nav>
     
-  <form action="/login" method="post" >
+  <form action="/auth/login" method="post" >
     <div class="text-center">
 
     <img class="mb-4 object-fit-scale border rounded" src="/images/sigefin.png" alt="" width="72" height="72">
     </div>
-    <h1 class="h3 mb-3 fw-normal">Faça Login</h1>
+    <h1 class="h3 mb-3 fw-normal text-center">Faça Login</h1>
 
     <div class="form-floating">
-      <input type="text" class="form-control" name="usuario" id="usuario" placeholder="usuario" required>
+      <input type="text" class="form-control" name="usuario" id="usuario" placeholder="usuario" required autofocus>
       <label for="floatingInput">Usuário</label>
     </div>
     <div class="form-floating">
@@ -37,7 +37,19 @@
       aria-label="Close"
     ></button>
   </div>
-{{/if}}</main>
+{{/if}}
+{{#if error}}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{error}}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+{{/if}}
+</main>
 
 <style>
   html,
@@ -67,3 +79,9 @@ body {
 }
 
 </style>
+
+{{!-- <script>
+  elForm = document.getElementsByTagName("form")
+  elForm[0].addEventListener("focus", function(event) {
+    document.getElementById("usuario").focus()
+</script> --}}

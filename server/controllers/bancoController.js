@@ -19,9 +19,9 @@ exports.view = async (req, res) => {
       // When done with the connection, release it
       if (!err) {
         let removedBanco = req.query.removed;
-        res.render("banco", { rows, removedBanco });
+        res.render("banco", { rows, removedBanco, session : req.session });
       } else {
-        res.render("banco", { error: err.sqlMessage });
+        res.render("banco", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from bancos table: \n", rows);
     }
@@ -38,9 +38,9 @@ exports.find = async (req, res) => {
     ["%" + searchTerm + "%"],
     (err, rows) => {
       if (!err) {
-        res.render("banco", { rows });
+        res.render("banco", { rows, session : req.session });
       } else {
-        res.render("banco", { error: err.sqlMessage });
+        res.render("banco", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from bancos table: \n", rows);
     }
@@ -49,7 +49,7 @@ exports.find = async (req, res) => {
 };
 
 exports.form = async (req, res) => {
-  res.render("add-banco");
+  res.render("add-banco", {session : req.session});
 };
 
 // Add new banco
@@ -58,7 +58,7 @@ exports.create = async (req, res) => {
   let erro_msg;
 
   if (nome.length < 1) {
-    res.render("add-banco", { error: "Nome não informado." });
+    res.render("add-banco", { error: "Nome não informado.", session : req.session });
     return;
   }
 
@@ -72,7 +72,7 @@ exports.create = async (req, res) => {
     [nome],
     (err, rows) => {
       if (rows.length > 0) {
-        res.render("add-banco", { error: nome + " já existe !" });
+        res.render("add-banco", { error: nome + " já existe !", session : req.session });
         return;
       } else {
         // bancos the connection
@@ -83,9 +83,10 @@ exports.create = async (req, res) => {
             if (!err) {
               res.render("add-banco", {
                 alert: `Banco ${nome} adicionado com sucesso !.`,
+                session : req.session
               });
             } else {
-              res.render("add-banco", { error: err.sqlMessage });
+              res.render("add-banco", { error: err.sqlMessage, session : req.session });
             }
             console.log("The data from bancos table: \n", rows);
           }
@@ -104,9 +105,9 @@ exports.edit = async (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("edit-banco", { rows });
+        res.render("edit-banco", { rows, session : req.session });
       } else {
-        res.render("edit-banco", { rows, error: err.sqlMessage });
+        res.render("edit-banco", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from bancos table: \n", rows);
     }
@@ -118,7 +119,7 @@ exports.update = async (req, res) => {
   const { nome, saldo_anterior, saldo } = req.body;
 
   if (nome.length < 1) {
-    res.render("edit-banco", { error: "Nome não informado." });
+    res.render("edit-banco", { error: "Nome não informado.", session : req.session });
     return;
   }
 
@@ -131,7 +132,7 @@ exports.update = async (req, res) => {
 
       if (!err) {
         if (rows.length > 0) {
-          res.render("edit-banco", { rows, error: nome + " já existe !" });
+          res.render("edit-banco", { rows, error: nome + " já existe !", session : req.session });
           return;
         } else {
           // bancos the connection
@@ -142,17 +143,17 @@ exports.update = async (req, res) => {
               if (!err) {
                 res.render("edit-banco", {
                   // rows,
-                  alert: `${nome} foi atualizado.`,
+                  alert: `${nome} foi atualizado.`, session : req.session
                 });
               } else {
-                res.render("edit-banco", { rows, error: err.sqlMessage });
+                res.render("edit-banco", { rows, error: err.sqlMessage, session : req.session });
               }
               console.log("The data from bancos table: \n", rows);
             }
           );
         }
       } else {
-        res.render("edit-banco", { rows, error: err.sqlMessage });
+        res.render("edit-banco", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from bancos table: \n", rows);
     }
@@ -186,7 +187,8 @@ exports.delete = async (req, res) => {
       if (!err) {
         if (rows[0]["COUNT(*)"] > 0) {
           res.render("view-banco", {
-            error: `Impossível excluír Banco ID ${req.params.id}. Falha de integridade !.`,
+            error: `Impossível excluír Banco ID ${req.params.id}. Falha de integridade !.`
+            , session : req.session
           });
           return;
         } else {
@@ -200,7 +202,7 @@ exports.delete = async (req, res) => {
                 );
                 res.redirect("/banco/?removed=" + removedBanco);
               } else {
-                res.render("view-banco", { rows, error: err.sqlMessage });
+                res.render("view-banco", { rows, error: err.sqlMessage, session : req.session });
               }
               console.log("The data from beer table are: \n", rows);
             }
@@ -208,7 +210,7 @@ exports.delete = async (req, res) => {
         }
       } else {
         res.render("view-banco", {
-          error: err.sqlMessage,
+          error: err.sqlMessage, session : req.session
         });
       }
       console.log("The data from beer table are: \n", rows);
@@ -225,9 +227,9 @@ exports.viewall = async (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("view-banco", { rows });
+        res.render("view-banco", { rows, session : req.session });
       } else {
-        res.render("view-banco", { rows, error: err.sqlMessage });
+        res.render("view-banco", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from bancos table: \n", rows);
     }

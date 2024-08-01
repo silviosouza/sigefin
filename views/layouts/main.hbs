@@ -58,11 +58,12 @@
                 aria-current="page"
                 href="/"
               >Home</a></li>
+            {{#if session.user_id}}
             <li class="nav-item list-inline-item"><a
                 class="nav-link"
                 href="/lanca"
               >Lançamentos</a></li>
-            <li class="nav-item list-inline-item"><a
+{{!--             <li class="nav-item list-inline-item"><a
                 aria-disabled="true"
                 class="nav-link disabled"
                 href="/careceber"
@@ -71,7 +72,7 @@
                 aria-disabled="true"
                 class="nav-link disabled"
                 href="/capagar"
-              >Contas a pagar</a></li>
+              >Contas a pagar</a></li> --}}
             <li class="nav-item list-inline-item"><a
                 class="nav-link"
                 href="/categoria"
@@ -89,7 +90,10 @@
                 href="/user"
               >Usuários</a></li>
             {{! <li class="nav-item list-inline-item"><a class="nav-link" href="/ope">Operações</a></li> }}
-            <li class="nav-item list-inline-item"><a class="nav-link" href="">Sair</a></li>
+            <li class="nav-item list-inline-item"><a class="nav-link" href="/auth/logout">Sair</a></li>
+            {{else}}
+              <li class="nav-item list-inline-item"><a class="nav-link" href="/login">Entrar</a></li>
+            {{/if}}
           </ul>
 
         </div>

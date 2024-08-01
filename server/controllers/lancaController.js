@@ -50,7 +50,7 @@ exports.view = async (req, res) => {
   LEFT JOIN bancos ban ON ban.id = lan.banco_id  
   LEFT JOIN operacoes ope ON ope.id = lan.ope_id  
   WHERE 1=1 AND lan.status = "active" 
-  ORDER BY lan.emissao DESC;
+  ORDER BY lan.emissao DESC ;
   `,
     (err, rows, fields) => {
       // When done with the connection, release it
@@ -87,6 +87,7 @@ exports.view = async (req, res) => {
           ope,
           cat,
           ent,
+          session : req.session
         });
         // connection.end();
       } else {
@@ -197,7 +198,7 @@ exports.find = async (req, res) => {
               : total - parseFloat(element.valor);
       });
         total = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-        res.render("lancamento", { rows, total, ban, ope, ent, cat });
+        res.render("lancamento", { rows, total, ban, ope, ent, cat, session : req.session });
       } else {
         console.log(err);
       }
@@ -253,7 +254,7 @@ exports.form = async (req, res) => {
           rows[3],
           rows[4],
         ];
-        res.render("add-lanca", { arLanca });
+        res.render("add-lanca", { arLanca, session : req.session });
         console.log(arLanca);
       } else {
         console.log(err);
@@ -292,7 +293,7 @@ exports.create = async (req, res) => {
     (operacao == 2 && vencimentoEm == null)
   ) {
     res.render("add-lanca", {
-      error: "Preencha todas as informações requeridas.",
+      error: "Preencha todas as informações requeridas.", session : req.session
     });
     return;
   }
@@ -324,7 +325,7 @@ exports.create = async (req, res) => {
     (err, rows) => {
       if (!err) {
         res.render("add-lanca", {
-          alert: "Lançamento adicionado com sucesso.",
+          alert: "Lançamento adicionado com sucesso.", session : req.session
         });
       } else {
         console.log(err);
@@ -362,12 +363,12 @@ exports.edit = async (req, res) => {
       if (!err) {
         if (rows[0].length === 0) {
           res.render("edit-lanca", {
-            error: `A operação deste lançamento ${req.params.id} não permite alterações !`,
+            error: `A operação deste lançamento ${req.params.id} não permite alterações !`, session : req.session
           });
         } else {
           currentRec = rows[0];
           arLanca = [rows[0], rows[1], rows[2], rows[3], rows[4]];
-          res.render("edit-lanca", { arLanca });
+          res.render("edit-lanca", { arLanca, session : req.session });
         }
       } else {
         console.log(err);
@@ -414,7 +415,7 @@ exports.update = async (req, res) => {
   let vencimentoEm = vencimento_em === "" ? null : vencimento_em;
 
   if (descricao.length < 1 || categoria < 1) {
-    res.render("edit-lanca", { error: "Faltando informações." });
+    res.render("edit-lanca", { error: "Faltando informações.", session : req.session });
     return;
   }
   console.log(
@@ -491,7 +492,7 @@ exports.update = async (req, res) => {
             if (!err) {
               res.render("edit-lanca", {
                 rows,
-                alert: `O lançamento foi atualizado.`,
+                alert: `O lançamento foi atualizado.`, session : req.session
               });
             } else {
               console.log(err);
@@ -546,7 +547,7 @@ exports.delete = async (req, res) => {
             if (!err) {
               // console.log("The res from delete lancamentos table: \n", res);
               res.render("view-lancamento", {
-                alert: `Exclusão realizada.`,
+                alert: `Exclusão realizada.`, session : req.session
               });
             } else {
               console.log(err);
@@ -584,7 +585,7 @@ exports.viewall = async (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("view-lancamento", { rows });
+        res.render("view-lancamento", { rows, session : req.session });
       } else {
         console.log(err);
       }
@@ -608,7 +609,7 @@ exports.baixar = async (req, res) => {
       (err, rows) => {
         if (!err) {
           res.render("view-lancamento", {
-            alert: "Baixa realizada com sucesso!",
+            alert: "Baixa realizada com sucesso!", session : req.session
           });
         } else {
           console.log(err);
@@ -617,6 +618,6 @@ exports.baixar = async (req, res) => {
       }
     );
   } else {
-    res.render("view-lancamento", { error: "Lançamento já está baixado!." });
+    res.render("view-lancamento", { error: "Lançamento já está baixado!.", session : req.session });
   }
 };

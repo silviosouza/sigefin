@@ -19,9 +19,9 @@ exports.view = async (req, res) => {
       // When done with the connection, release it
       if (!err) {
         let removedCategoria = req.query.removed;
-        res.render("categoria", { rows, removedCategoria });
+        res.render("categoria", { rows, removedCategoria, session : req.session });
       } else {
-        res.render("categoria", { error: err.sqlMessage });
+        res.render("categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
     }
@@ -38,9 +38,9 @@ exports.find = async (req, res) => {
     ["%" + searchTerm + "%"],
     (err, rows) => {
       if (!err) {
-        res.render("categoria", { rows });
+        res.render("categoria", { rows, session : req.session });
       } else {
-        res.render("categoria", { error: err.sqlMessage });
+        res.render("categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
     }
@@ -49,7 +49,7 @@ exports.find = async (req, res) => {
 };
 
 exports.form = async (req, res) => {
-  res.render("add-categoria");
+  res.render("add-categoria", {session : req.session});
 };
 
 // Add new categoria
@@ -57,7 +57,7 @@ exports.create = async (req, res) => {
   const { descricao } = req.body;
 
   if (descricao.length < 1) {
-    res.render("add-categoria", { error: "Descrição não informada." });
+    res.render("add-categoria", { error: "Descrição não informada.", session : req.session });
     return;
   }
 
@@ -68,7 +68,7 @@ exports.create = async (req, res) => {
     (err, rows) => {
       if (!err) {
         if (rows.length > 0) {
-          res.render("add-categoria", { error: descricao + " já existe !" });
+          res.render("add-categoria", { error: descricao + " já existe !", session : req.session });
           return;
         } else {
           // Categorias the connection
@@ -78,16 +78,16 @@ exports.create = async (req, res) => {
             (err, rows) => {
               if (!err) {
                 res.render("add-categoria", {
-                  alert: `Categoria ${descricao} adicionada com sucesso.`,
+                  alert: `Categoria ${descricao} adicionada com sucesso.`, session : req.session
                 });
               } else {
-                res.render("add-categoria", { error: err.sqlMessage });
+                res.render("add-categoria", { error: err.sqlMessage, session : req.session });
               }
             }
           );
         }
       } else {
-        res.render("add-categoria", { error: err.sqlMessage });
+        res.render("add-categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
     }
@@ -103,9 +103,9 @@ exports.edit = async (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("edit-categoria", { rows });
+        res.render("edit-categoria", { rows, session : req.session });
       } else {
-        res.render("edit-categoria", { error: err.sqlMessage });
+        res.render("edit-categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
     }
@@ -118,7 +118,7 @@ exports.update = async (req, res) => {
   const { descricao } = req.body;
 
   if (descricao.length < 1) {
-    res.render("edit-categoria", { error: "Nome/Tipo não informado(s)." });
+    res.render("edit-categoria", { error: "Nome/Tipo não informado(s).", session : req.session });
     return;
   }
 
@@ -133,7 +133,7 @@ exports.update = async (req, res) => {
         if (rows.length > 0) {
           res.render("edit-categoria", {
             rows,
-            error: `Categoria ${descricao} já existe !.`,
+            error: `Categoria ${descricao} já existe !.`, session : req.session
           });
           return;
         } else {
@@ -144,12 +144,12 @@ exports.update = async (req, res) => {
             (err, rows) => {
               if (!err) {
                 res.render("edit-categoria", {
-                  alert: `${descricao} foi alterada.`,
+                  alert: `${descricao} foi alterada.`, session : req.session
                 });
               } else {
                 res.render("edit-categoria", {
                   rows,
-                  error: err.sqlMessage,
+                  error: err.sqlMessage, session : req.session
                 });
               }
               console.log("The data from categorias table: \n", rows);
@@ -158,7 +158,7 @@ exports.update = async (req, res) => {
         }
       } else {
         res.render("edit-categoria", {
-          error: err.sqlMessage,
+          error: err.sqlMessage, session : req.session
         });
       }
       console.log("The data from categorias table: \n", rows);
@@ -193,7 +193,7 @@ exports.delete = async (req, res) => {
       if (!err) {
         if (rows[0]["COUNT(*)"] > 0) {
           res.render("view-categoria", {
-            error: `Impossível excluír Categoria ID ${req.params.id}. Falha de integridade !.`,
+            error: `Impossível excluír Categoria ID ${req.params.id}. Falha de integridade !.`, session : req.session
           });
           return;
         } else {
@@ -209,7 +209,7 @@ exports.delete = async (req, res) => {
               } else {
                 res.render("view-categoria", {
                   rows,
-                  error: err.sqlMessage,
+                  error: err.sqlMessage, session : req.session
                 });
               }
             }
@@ -217,7 +217,7 @@ exports.delete = async (req, res) => {
         }
       } else {
         res.render("view-categoria", {
-          error: err.sqlMessage,
+          error: err.sqlMessage, session : req.session
         });
       }
       console.log("The data from beer table are: \n", rows);
@@ -234,7 +234,7 @@ exports.viewall = async (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("view-categoria", { rows });
+        res.render("view-categoria", { rows, session : req.session });
       } else {
         console.log(err);
       }

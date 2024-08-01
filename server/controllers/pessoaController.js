@@ -19,9 +19,9 @@ exports.view = async (req, res) => {
       // When done with the connection, release it
       if (!err) {
         let removedPessoa = req.query.removed;
-        res.render("pessoa", { rows, removedPessoa });
+        res.render("pessoa", { rows, removedPessoa, session : req.session });
       } else {
-        res.render("pessoa", { rows, error: err.sqlMessage });
+        res.render("pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
     }
@@ -38,9 +38,9 @@ exports.find = async (req, res) => {
     ["%" + searchTerm + "%"],
     (err, rows) => {
       if (!err) {
-        res.render("pessoa", { rows });
+        res.render("pessoa", { rows, session : req.session });
       } else {
-        res.render("pessoa", { rows, error: err.sqlMessage });
+        res.render("pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
     }
@@ -48,7 +48,7 @@ exports.find = async (req, res) => {
 };
 
 exports.form = async (req, res) => {
-  res.render("add-pessoa");
+  res.render("add-pessoa", {session : req.session});
 };
 
 // Add new pessoa
@@ -56,7 +56,7 @@ exports.create = async (req, res) => {
   const { nome, tipo } = req.body;
 
   if (nome.length < 1 || tipo.length < 1) {
-    res.render("add-pessoa", { error: "Nome/Tipo não informado(s)." });
+    res.render("add-pessoa", { error: "Nome/Tipo não informado(s).", session : req.session });
     return;
   }
 
@@ -67,7 +67,7 @@ exports.create = async (req, res) => {
     (err, rows) => {
       if (!err) {
         if (rows.length > 0) {
-          res.render("add-pessoa", { rows, error: nome + " já existe !" });
+          res.render("add-pessoa", { rows, error: nome + " já existe !", session : req.session });
           return;
         } else {
           // pessoas the connection
@@ -78,17 +78,17 @@ exports.create = async (req, res) => {
               if (!err) {
                 res.render("add-pessoa", {
                   rows,
-                  alert: `Pessoa ${nome} adicionada com sucesso !.`,
+                  alert: `Pessoa ${nome} adicionada com sucesso !.`, session : req.session
                 });
               } else {
-                res.render("add-pessoa", { rows, error: err.sqlMessage });
+                res.render("add-pessoa", { rows, error: err.sqlMessage, session : req.session });
               }
               console.log("The data from pessoas table: \n", rows);
             }
           );
         }
       } else {
-        res.render("add-pessoa", { rows, error: err.sqlMessage });
+        res.render("add-pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
     }
   );
@@ -103,9 +103,9 @@ exports.edit = async (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("edit-pessoa", { rows });
+        res.render("edit-pessoa", { rows, session : req.session });
       } else {
-        res.render("edit-pessoa", { rows, error: err.sqlMessage });
+        res.render("edit-pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
     }
@@ -118,7 +118,7 @@ exports.update = async (req, res) => {
   const { nome, tipo } = req.body;
 
   if (nome.length < 1 || tipo.length < 1) {
-    res.render("edit-pessoa", { error: "Nome/Tipo não informado(s)." });
+    res.render("edit-pessoa", { error: "Nome/Tipo não informado(s).", session : req.session });
     return;
   }
 
@@ -132,7 +132,7 @@ exports.update = async (req, res) => {
         if (rows.length > 0) {
           res.render("edit-pessoa", {
             rows,
-            alert: `Pessoa ${nome} já existe !.`,
+            alert: `Pessoa ${nome} já existe !.`, session : req.session
           });
           return;
         } else {
@@ -143,16 +143,16 @@ exports.update = async (req, res) => {
               if (!err) {
                 res.render("edit-pessoa", {
                   // rows,
-                  alert: `${nome} foi alterado !.`,
+                  alert: `${nome} foi alterado !.`, session : req.session
                 });
               } else {
-                res.render("edit-pessoa", { error: err.sqlMessage });
+                res.render("edit-pessoa", { error: err.sqlMessage, session : req.session });
               }
             }
           );
         }
       } else {
-        res.render("edit-pessoa", { error: err.sqlMessage });
+        res.render("edit-pessoa", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
     }
@@ -186,7 +186,7 @@ exports.delete = async (req, res) => {
       if (!err) {
         if (rows[0]["COUNT(*)"] > 0) {
           res.render("view-pessoa", {
-            error: `Impossível excluír Pessoa ID ${req.params.id}. Falha de integridade !.`,
+            error: `Impossível excluír Pessoa ID ${req.params.id}. Falha de integridade !.`, session : req.session
           });
           return;
         } else {
@@ -201,7 +201,7 @@ exports.delete = async (req, res) => {
                 console.log(removedPessoa);
                 res.redirect("/pessoa/?removed=" + removedPessoa);
               } else {
-                res.render("view-pessoa", { error: err.sqlMessage });
+                res.render("view-pessoa", { error: err.sqlMessage, session : req.session });
               }
               console.log("The data from beer table are: \n", rows);
             }
@@ -209,7 +209,7 @@ exports.delete = async (req, res) => {
         }
       } else {
         res.render("view-pessoa", {
-          error: err.sqlMessage,
+          error: err.sqlMessage, session : req.session
         });
       }
       console.log("The data from beer table are: \n", rows);
@@ -226,9 +226,9 @@ exports.viewall = async (req, res) => {
     [req.params.id],
     (err, rows) => {
       if (!err) {
-        res.render("view-pessoa", { rows });
+        res.render("view-pessoa", { rows, session : req.session });
       } else {
-        res.render("view-pessoa", { error: err.sqlMessage });
+        res.render("view-pessoa", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
     }

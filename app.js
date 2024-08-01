@@ -5,8 +5,17 @@ const exphbs = require('express-handlebars');
 
 require('dotenv').config();
 
+var session = require('express-session');
+
 const app = express();
 const port = process.env.PORT || 4321;
+
+app.use(session({
+    secret : 'webslesson',
+    resave : true,
+    saveUninitialized : true
+  }));
+  
 // Parsing middleware
 // Parse application/x-www-form-urlencoded
 // app.use(bodyParser.urlencoded({ extended: false }));
@@ -34,5 +43,6 @@ app.set('view engine', '.hbs');
 
 const routes = require('./server/routes/routes');
 app.use('/', routes);
+app.use('/auth', require('./server/routes/auth.js'))
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
