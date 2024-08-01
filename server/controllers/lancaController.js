@@ -68,14 +68,15 @@ exports.view = async (req, res) => {
             parseFloat(element.valor.replace(",", ".")),
             total
           ); */
-          if (element.ope_id == 1) {
+          // if (element.ope_id == 1) {
             total =
               element.tipo == "R"
                 ? total + parseFloat(element.valor)
                 : total - parseFloat(element.valor);
             // console.log(element.ope_id, element.valor, total);
           }
-        });
+        // }
+      );
         total = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         let removedLanca = req.query.removed;
         res.render("lancamento", {
@@ -157,7 +158,7 @@ exports.find = async (req, res) => {
   SELECT * FROM bancos WHERE 1=1 AND status='active' ORDER BY nome;
   SELECT * FROM operacoes WHERE 1=1 AND status='active' ORDER BY descricao;
   SELECT lan.id, lan.tipo, lan.descricao lanca_desc, 
-  date_format(lan.emissao,'%d/%m/%Y') emissao, FORMAT(lan.valor,2,'de_DE') valor, 
+  date_format(lan.emissao,'%d/%m/%Y') emissao, FORMAT(lan.valor,2,'de_DE') fvalor, lan.valor valor, 
   date_format(lan.vencimento_em,'%d/%m/%Y') vencimento_em, date_format(lan.pago_em,'%d/%m/%Y %H:%i') pago_em, 
   cat.descricao nome_categoria, pes.nome nome_pessoa, pes.tipo tipo_pessoa, 
   ban.nome nome_banco, ban.saldo_anterior, ban.saldo, lan.ope_id, lan.id_origem,
@@ -190,17 +191,12 @@ exports.find = async (req, res) => {
         cat = linhas[0];
         // console.log(lanca)
         rows.forEach((element) => {
-          /*           console.log(
-            element.valor,
-            parseFloat(element.valor.replace(",", ".")),
-            total
-          ); */
           total =
             element.tipo == "R"
-              ? total + parseFloat(element.valor.replace(",", "."))
-              : total - parseFloat(element.valor.replace(",", "."));
-        });
-        total = total.toFixed(2);
+              ? total + parseFloat(element.valor)
+              : total - parseFloat(element.valor);
+      });
+        total = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         res.render("lancamento", { rows, total, ban, ope, ent, cat });
       } else {
         console.log(err);
