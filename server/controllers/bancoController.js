@@ -14,12 +14,18 @@ let connection = mysql.createConnection({
 exports.view = async (req, res) => {
   // bancos the connection
   await  connection.query(
-    'SELECT id, nome, FORMAT(saldo_anterior,2,"de_DE") saldo_anterior, FORMAT(saldo,2,"de_DE") saldo FROM bancos WHERE 1=1 AND  status = "active" ORDER BY nome',
+    'SELECT id, nome, FORMAT(saldo_anterior,2,"de_DE") saldo_anterior, FORMAT(saldo,2,"de_DE") fsaldo, saldo FROM bancos WHERE 1=1 AND  status = "active" ORDER BY nome',
     (err, rows) => {
       // When done with the connection, release it
       if (!err) {
+        let total = 0;
         let removedBanco = req.query.removed;
-        res.render("banco", { rows, removedBanco, session : req.session });
+        rows.forEach((element) => {
+          total = total + parseFloat(element.saldo)
+      });
+        total = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+        res.render("banco", { rows, removedBanco, total, session : req.session });
       } else {
         res.render("banco", { error: err.sqlMessage, session : req.session });
       }

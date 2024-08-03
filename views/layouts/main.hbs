@@ -234,10 +234,11 @@
     function myFunction(x, y) { 
       const x_tipo = document.getElementById(x); 
       const y_tipo = document.getElementById(y); 
+      if(x_tipo && y_tipo) {
       if (!x_tipo.checked && !y_tipo.checked) {
         abreModal('exampleModalLabel', 'modalBody', 'Faltando dados !', 'Selecione o Tipo de lançamento (Despesa ou Receita?) .', 'Ok', 'open-modal'); 
       } 
-    };
+    }};
 
     function abreModal(idh, idb, h, b, bl, __modal) { 
       const _h = document.getElementById(idh); 
@@ -250,6 +251,9 @@
       eventFire(_modal, 'click') 
     };
     
+function getToday() {
+  return new Date();
+}
 
   </script>
 

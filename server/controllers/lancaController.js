@@ -61,28 +61,22 @@ exports.view = async (req, res) => {
         ope = linhas[3];
         ent = linhas[1];
         cat = linhas[0];
-        total = 0;
+        let lanSaldo = totalR = totalD = 0;
         rows.forEach((element) => {
-          /*           console.log(
-            element.valor,
-            parseFloat(element.valor.replace(",", ".")),
-            total
-          ); */
-          // if (element.ope_id == 1) {
-            total =
-              element.tipo == "R"
-                ? total + parseFloat(element.valor)
-                : total - parseFloat(element.valor);
-            // console.log(element.ope_id, element.valor, total);
-          }
-        // }
-      );
-        total = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+          totalR = totalR + (element.tipo == "R" ? parseFloat(element.valor) : 0);
+          totalD = totalD + (element.tipo == "D" ? parseFloat(element.valor) : 0);
+        });
+        lanSaldo = totalR - totalD
+        totalR = totalR.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        totalD = totalD.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        lanSaldo = lanSaldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
         let removedLanca = req.query.removed;
         res.render("lancamento", {
           rows,
           removedLanca,
-          total,
+          totalR,
+          totalD,
+          lanSaldo,
           ban,
           ope,
           cat,
@@ -151,7 +145,7 @@ exports.find = async (req, res) => {
       ? ``
       : `AND ${dfiltro} BETWEEN '${req.body.dtinicial}' AND '${req.body.dtfinal}'`;
 
-  console.log(req.body);
+  // console.log(req.body);
 
   // User the connection
   const qry = `SELECT * FROM categorias WHERE 1=1 AND status='active' ORDER BY descricao;
@@ -183,7 +177,7 @@ exports.find = async (req, res) => {
     ],
     (err, rows) => {
       if (!err) {
-        total = 0;
+        let lanSaldo = totalR = totalD = 0;
         linhas = rows;
         rows = linhas[4];
         ban = linhas[2];
@@ -192,13 +186,16 @@ exports.find = async (req, res) => {
         cat = linhas[0];
         // console.log(lanca)
         rows.forEach((element) => {
-          total =
-            element.tipo == "R"
-              ? total + parseFloat(element.valor)
-              : total - parseFloat(element.valor);
-      });
-        total = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-        res.render("lancamento", { rows, total, ban, ope, ent, cat, session : req.session });
+          totalR = totalR +
+            (element.tipo == "R" ? parseFloat(element.valor) : 0);
+          totalD = totalD +
+            (element.tipo == "D" ? parseFloat(element.valor) : 0);
+        });
+        lanSaldo = totalR - totalD
+        totalR = totalR.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        totalD = totalD.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        lanSaldo = lanSaldo.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        res.render("lancamento", { rows, totalR, totalD, lanSaldo, ban, ope, ent, cat, session : req.session });
       } else {
         console.log(err);
       }
@@ -274,7 +271,7 @@ exports.create = async (req, res) => {
     operacao,
     descricao,
     valor,
-    emissao,
+    // emissao,
     vencimento_em,
     origem_id,
   } = req.body;
@@ -289,7 +286,6 @@ exports.create = async (req, res) => {
     banco.length < 1 ||
     operacao.length < 1 ||
     valor === 0 ||
-    emissao.length < 1 ||
     (operacao == 2 && vencimentoEm == null)
   ) {
     res.render("add-lanca", {
@@ -309,14 +305,14 @@ exports.create = async (req, res) => {
   // lancamentos the connection
   await connection.query(
     `INSERT INTO lancamentos SET tipo = ?, cat_id = ?, pes_id = ?, banco_id = ?, ope_id = ?,
-    emissao = ?, valor = ?, vencimento_em = ?, descricao = ?, id_origem = ?; ${qryBanco}`,
+    valor = ?, vencimento_em = ?, descricao = ?, id_origem = ?; ${qryBanco}`,
     [
       tipo,
       categoria,
       pessoa,
       banco,
       operacao,
-      emissao,
+      // emissao,
       valor,
       vencimentoEm,
       descricao,

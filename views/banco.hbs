@@ -43,7 +43,7 @@
       <th scope="row">{{this.id}}</th>
       <td>{{this.nome}}</td>
       <td class="text-end">{{this.saldo_anterior}}</td>
-      <td class="text-end">{{this.saldo}}</td>
+      <td class="text-end">{{this.fsaldo}}</td>
       <td class="text-end">
         <a href="/viewbanco/{{this.id}}" type="button" class="btn btn-light btn-sm"><i class="bi bi-eye"></i> Ver</a>
         <a href="/editbanco/{{this.id}}" type="button" class="btn btn-light btn-sm"><i class="bi bi-pencil"></i>
@@ -53,5 +53,14 @@
     {{/each}}
 
   </tbody>
+    <tfoot>
+      <tr>
+        <td></td>
+        <td></td>
+        <th scope="row" class="text-end">Valor Total</th>
+        <td class="text-end">{{total}}</td>
+        <td></td>
+      </tr>
+    </tfoot>
 </table>
 </div>
