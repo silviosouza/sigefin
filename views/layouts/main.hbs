@@ -34,12 +34,12 @@
 <meta name="theme-color" content="#ffffff">
 </head>
 
-  <body">
+  <body>
     <nav
-      class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bg-body-tertiary mb-1"
+      class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bg-body-tertiary mb-1 no-print"
     >
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">Gestor Financeiro</a>
+        <a class="navbar-brand" href="/">GestorFinanceiro</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -85,10 +85,43 @@
                 class="nav-link"
                 href="/banco"
               >Bancos</a></li>
-            <li class="nav-item list-inline-item"><a
-                class="nav-link"
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Relatórios
+          </a>
+          <ul class="dropdown-menu">
+
+            <li><a
+                class="dropdown-item"
+                href="/rellancamentos"
+              >Lançamentos</a></li>
+
+    {{!-- <li><a class="dropdown-item"  href="/backup">Criar Backup</a></li>
+    <li><a class="dropdown-item disabled" href="#">Restaurar Backup</a></li> --}}
+          </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Suporte
+          </a>
+          <ul class="dropdown-menu">
+
+            <li><a
+                class="dropdown-item"
                 href="/user"
               >Usuários</a></li>
+
+    <li><a class="dropdown-item"  href="/backup">Criar Backup</a></li>
+    <li><a class="dropdown-item disabled" href="#">Restaurar Backup</a></li>
+          </ul>
+        </li>
+
+
+      </ul>
+
+
             {{! <li class="nav-item list-inline-item"><a class="nav-link" href="/ope">Operações</a></li> }}
             <li class="nav-item list-inline-item"><a class="nav-link" href="/auth/logout">Sair</a></li>
             {{else}}
@@ -215,7 +248,10 @@
       crossorigin="anonymous"
     >
     </script>
+
   </body>
+
+  <script src="https://rawgit.com/Lautert/helpers/master/javascript.helpers.js"></script>
 
   <script>
 

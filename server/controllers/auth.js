@@ -66,8 +66,8 @@ exports.login = async (req, res) => {
         }
 
         db.query('SELECT * FROM user WHERE name = ?', [usuario], async (error, results) => {
-            console.log('>>>>>>>>>>>>>>> results');
-            console.log(results);
+/*             console.log('>>>>>>>>>>>>>>> results');
+            console.log(results); */
             if(!results || !(await bcrypt.compare(password,results[0].password))){
                 res.status(401).render('login', {
                     error: 'Usuário ou senha está incorreta'
@@ -79,7 +79,7 @@ exports.login = async (req, res) => {
                     expiresIn: process.env.JWT_EXPIRES_IN
                 });
 
-                console.log("the token is: " + token);
+                // console.log("the token is: " + token);
 
                 const cookieOptions = {
                     expires: new Date(
@@ -103,8 +103,8 @@ exports.login = async (req, res) => {
 
 
 exports.isLoggedIn = async(req, res, next) => {
-    console.log('>>>>>>>>>>>>>>>>>>>>>> cookie');
-    console.log(req.get('cookie'));
+/*     console.log('>>>>>>>>>>>>>>>>>>>>>> cookie');
+    console.log(req.get('cookie')); */
     if(req.get('cookie') !== undefined) {
         const myCookie = req.get('cookie').substr(4);
         try {
@@ -113,12 +113,12 @@ exports.isLoggedIn = async(req, res, next) => {
                     process.env.JWT_SECRET
             );
             
-            console.log('>>>>>>>>>>>>>>>> decoded');
-            console.log(decoded);
+/*             console.log('>>>>>>>>>>>>>>>> decoded');
+            console.log(decoded); */
          //2)check se o usuário existe 
             db.query('SELECT * FROM user WHERE id = ?',[decoded.id],(error,result) => {
-                console.log('>>>>>>>>>> result');
-                console.log(result);
+/*                 console.log('>>>>>>>>>> result');
+                console.log(result); */
 
                 if(!result) {
                     return next();
@@ -132,7 +132,7 @@ exports.isLoggedIn = async(req, res, next) => {
             return next();
         }
     } else {
-        console.log('>>>>>>>> next()');
+        // console.log('>>>>>>>> next()');
         next();
     }
 }

@@ -7,6 +7,7 @@ const pessoaController = require('../controllers/pessoaController');
 const bancoController = require('../controllers/bancoController');
 const lancaController = require('../controllers/lancaController');
 const opeController = require('../controllers/opeController');
+const suporteController = require('../controllers/suporteController');
 
 // Routes
 
@@ -20,6 +21,10 @@ router.post('/editlanca/:id', lancaController.update);
 router.get('/viewlanca/:id', lancaController.viewall);
 router.get('/dellanca/:id',lancaController.delete); 
 router.get('/baixarlanca/:id',lancaController.baixar); 
+router.get('/rellancamentos',lancaController.rellancamentos); 
+router.post('/rellancamentos',lancaController.print); 
+router.post('/print',lancaController.print); 
+
 
 // Bancos
 router.get('/banco', bancoController.view);
@@ -71,9 +76,10 @@ router.post('/editope/:id', opeController.update);
 router.get('/viewope/:id', opeController.viewall);
 router.get('/delope/:id',opeController.delete); 
 
+router.get('/backup',suporteController.backup);
 
 router.get('/',(req, res, next) => {
-  console.log(req.session)
+  // console.log(req.session)
   res.render('home', {
     user: req.user,
     dbName: process.env.DB_NAME,
@@ -82,8 +88,9 @@ router.get('/',(req, res, next) => {
 });
 
 router.get('/login',(req, res) => {
-  res.render('login');
+  var user_name = process.env.USER_NAME
+  var pass_word = process.env.PASSWD
+  res.render('login', {user_name, pass_word});
 });
-
 
 module.exports = router;

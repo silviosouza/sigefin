@@ -1,22 +1,29 @@
+{{#if alert}}
+  <script> alert("{{alert}}") </script>
+{{/if}}
+
+{{#if error}}
+  <script>alert({{error}})</script>
+{{/if}}
+
 <div class="row text-center">
   <div class="col-12">
-    <h1>Sigefin<br>Gestor Financeiro</h1>
-    <br>
+    <h1>Sigefin<br />Gestor Financeiro</h1>
+    <br />
     <h5>Bem vindo ao Sigefin</h5>
-    <br>
+    <br />
     <h6>Investindo no futuro</h6>
     {{#if dbName}}
-    <br>
-    <h7>{{dbName}}</h7>
+      <br />
+      <h7>{{dbName}}</h7>
     {{/if}}
   </div>
 </div>
-  <footer class="text-center fixed-bottom">
-    <h6>Versão: 1.0</h6>
-  </footer>
+<footer class="text-center fixed-bottom">
+  <h6>Versão: 1.0</h6>
+</footer>
 
 <script>
-    elTitle = document.querySelector('title');
-    console.log(elTitle)
-    elTitle.innerHTML = `SIGEFIN ({{dbName}})`;
+  elTitle = document.querySelector('title'); console.log(elTitle)
+  elTitle.innerHTML = `SIGEFIN ({{dbName}})`;
 </script>
