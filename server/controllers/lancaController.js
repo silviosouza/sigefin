@@ -29,8 +29,8 @@ exports.view = async (req, res) => {
     ban.nome nome_banco, ban.saldo_anterior, ban.saldo, lan.ope_id, lan.id_origem, 
     ope.descricao descricao_ope, date_format(lan.pago_em,'%d/%m/%Y %H:%i') pago_em, 
     lan.vencimento_em vencimentoem, 
-    case when datediff( vencimento_em, CURDATE()) in (1,2,3) then 'table-warning' 
-         when datediff( vencimento_em, CURDATE())< 1 then 'table-danger' end AS lanca_state,
+    case when datediff( vencimento_em, CURDATE()) in (1,2,3) AND lan.pago_em is null then 'table-warning' 
+         when datediff( vencimento_em, CURDATE())< 1 AND lan.pago_em is null then 'table-danger' end AS lanca_state,
     datediff( vencimento_em, CURDATE()) AS dias
     FROM lancamentos lan 
     LEFT JOIN categorias cat ON cat.id = lan.cat_id  
@@ -163,8 +163,8 @@ exports.find = async (req, res) => {
   cat.descricao nome_categoria, pes.nome nome_pessoa, pes.tipo tipo_pessoa, 
   ban.nome nome_banco, ban.saldo_anterior, ban.saldo, lan.ope_id, lan.id_origem,
   ope.descricao descricao_ope, lan.vencimento_em vencimentoem, 
-  case when datediff( vencimento_em, CURDATE()) in (1,2,3) then 'table-warning' 
-       when datediff( vencimento_em, CURDATE())< 1 then 'table-danger' end AS lanca_state,
+  case when datediff( vencimento_em, CURDATE()) in (1,2,3) AND lan.pago_em is null then 'table-warning' 
+       when datediff( vencimento_em, CURDATE())< 1 AND lan.pago_em is null then 'table-danger' end AS lanca_state,
   datediff( vencimento_em, CURDATE()) AS dias
   FROM lancamentos lan 
   LEFT JOIN categorias cat ON cat.id = lan.cat_id  
