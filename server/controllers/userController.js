@@ -1,3 +1,4 @@
+require('dotenv').config();
 const session = require("express-session");
 const mysql = require("mysql");
 const bcrypt = require("bcryptjs");

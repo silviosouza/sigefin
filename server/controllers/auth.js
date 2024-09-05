@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mysql = require("mysql"); //importando mysql
 const jwt = require("jsonwebtoken"); //importando jwt
 const bcrypt = require("bcryptjs"); //importando bcrypt
