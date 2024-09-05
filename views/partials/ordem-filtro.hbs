@@ -52,7 +52,7 @@
                       type="radio"
                       name="inlineRadioOptions1"
                       id="inlineRadio2"
-                      value="vencimento_em, nome_categoria, nome_pessoa, lanca_desc"
+                      value="vencimentoem, nome_categoria, nome_pessoa, lanca_desc"
                     />
                     <label
                       class="form-check-label"
@@ -142,15 +142,28 @@
 
                 <h6>Tipo de Lançamento</h6>
                 <div class="p-2 border mb-2 rounded">
-                  {{! D ou R }}
+                  {{! T, D ou R }}
                   <div class="form-check form-check-inline">
                     <input
                       class="form-check-input"
                       type="radio"
                       name="inlineRadioOptionsT"
-                      id="inlineRadioD"
-                      value="D"
+                      id="inlineRadioTT"
+                      value="T"
                       checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="inlineRadio1"
+                    >Todos</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="inlineRadioOptionsT"
+                      id="inlineRadioTD"
+                      value="D"
                     />
                     <label
                       class="form-check-label"
@@ -162,13 +175,59 @@
                       class="form-check-input"
                       type="radio"
                       name="inlineRadioOptionsT"
-                      id="inlineRadioR"
+                      id="inlineRadioTR"
                       value="R"
                     />
                     <label
                       class="form-check-label"
                       for="inlineRadio2"
                     >Receitas</label>
+                  </div>
+                </div>
+
+                {{!-- Situação do lançamento (Em Todos, abertos ou Quitados) --}}
+                <h6>Situação</h6>
+                <div class="p-2 border mb-2 rounded">
+                  {{! T, A ou Q }}
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="inlineRadioOptionsS"
+                      id="inlineRadioST"
+                      value="T"
+                      checked
+                    />
+                    <label
+                      class="form-check-label"
+                      for="inlineRadioA"
+                    >Todos</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="inlineRadioOptionsS"
+                      id="inlineRadioSA"
+                      value="A"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="inlineRadioA"
+                    >Em aberto</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="inlineRadioOptionsS"
+                      id="inlineRadioSQ"
+                      value="Q"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="inlineRadioQ"
+                    >Quitados</label>
                   </div>
                 </div>
 

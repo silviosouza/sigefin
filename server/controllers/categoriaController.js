@@ -1,19 +1,19 @@
-const mysql = require("mysql");
-
-// Connection Pool
-let connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  multipleStatements: true,
-});
+const session = require("express-session");
 
 // View Categoria
 exports.view = async (req, res) => {
   // Categorias the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     'SELECT * FROM categorias WHERE 1=1 AND status = "active" ORDER BY descricao',
     (err, rows) => {
       // When done with the connection, release it
@@ -24,16 +24,27 @@ exports.view = async (req, res) => {
         res.render("categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
+      conn.release();
     }
   );
-  // connection.end();
+})
 };
 
 // Find Categoria by Search
 exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   // User the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     "SELECT * FROM categorias WHERE 1=1 AND status='active' AND descricao LIKE ? ",
     ["%" + searchTerm + "%"],
     (err, rows) => {
@@ -43,9 +54,10 @@ exports.find = async (req, res) => {
         res.render("categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
+      conn.release();
     }
   );
-  // connection.end();
+})
 };
 
 exports.form = async (req, res) => {
@@ -62,7 +74,17 @@ exports.create = async (req, res) => {
   }
 
   // verica se já existe
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+await conn.query(
     `SELECT * FROM categorias WHERE 1=1 AND descricao = ? AND status = "active";`,
     [descricao],
     (err, rows) => {
@@ -72,7 +94,7 @@ exports.create = async (req, res) => {
           return;
         } else {
           // Categorias the connection
-          connection.query(
+          conn.query(
             "INSERT INTO categorias SET descricao = ?",
             [descricao],
             (err, rows) => {
@@ -90,15 +112,26 @@ exports.create = async (req, res) => {
         res.render("add-categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
+      conn.release();
     }
   );
-  // connection.end();
+  })
 };
 
 // Edit categoria
 exports.edit = async (req, res) => {
   // Categorias the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     "SELECT * FROM categorias WHERE 1=1 AND status='active' AND id = ?",
     [req.params.id],
     (err, rows) => {
@@ -108,9 +141,10 @@ exports.edit = async (req, res) => {
         res.render("edit-categoria", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from categorias table: \n", rows);
+      conn.release();
     }
   );
-  // connection.end();
+})
 };
 
 // Update Categoria
@@ -123,7 +157,17 @@ exports.update = async (req, res) => {
   }
 
   // Categorias the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     "SELECT * FROM categorias WHERE 1=1 AND status='active' AND descricao = ? AND id <> ?",
     [descricao, req.params.id],
     (err, rows) => {
@@ -138,7 +182,7 @@ exports.update = async (req, res) => {
           return;
         } else {
           // Categorias the connection
-          connection.query(
+          conn.query(
             "UPDATE categorias SET descricao = ? WHERE 1=1 AND status='active' AND id = ?",
             [descricao, req.params.id],
             (err, rows) => {
@@ -162,9 +206,10 @@ exports.update = async (req, res) => {
         });
       }
       console.log("The data from categorias table: \n", rows);
+      conn.release()
     }
   );
-  // connection.end();
+})
 };
 
 // Delete Categoria
@@ -186,7 +231,17 @@ exports.delete = async (req, res) => {
   // Hide a record
 
   // Veifica integridade
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+await conn.query(
     `SELECT COUNT(*) FROM lancamentos WHERE cat_id = ?;`,
     [req.params.id],
     (err, rows) => {
@@ -197,7 +252,7 @@ exports.delete = async (req, res) => {
           });
           return;
         } else {
-          connection.query(
+          conn.query(
             "SELECT descricao FROM categorias WHERE 1=1 AND status='active' AND id = ?; UPDATE categorias SET status = ? WHERE 1=1 AND status = 'active' AND id = ?;",
             [req.params.id, "removed", req.params.id],
             (err, rows) => {
@@ -221,15 +276,26 @@ exports.delete = async (req, res) => {
         });
       }
       console.log("The data from beer table are: \n", rows);
+      conn.release()
     }
   );
-  // connection.end();
+})
 };
 
 // View Categorias
 exports.viewall = async (req, res) => {
   // Categorias the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     "SELECT * FROM categorias WHERE 1=1 AND status = 'active' AND id = ?",
     [req.params.id],
     (err, rows) => {
@@ -239,7 +305,8 @@ exports.viewall = async (req, res) => {
         console.log(err);
       }
       console.log("The data from categorias table: \n", rows);
+      conn.release()
     }
   );
-  // connection.end();
+})
 };

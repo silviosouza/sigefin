@@ -1,11 +1,16 @@
 const mysql = require("mysql");
+var fs = require("fs");
+
+var path = require("path");
+var db = JSON.parse(fs.readFileSync(path.join("./public","db.json"), "utf8"));
+var cliente = JSON.parse(fs.readFileSync(path.join("./public","cliente.json"), "utf8"));
 
 // Connection Pool
 let connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+  host: db.endpoint,
+  user: db.dbusername,
+  password: db.dbsenha,
+  database: db.dbname,
   port: process.env.DB_PORT,
   multipleStatements: true,
 });

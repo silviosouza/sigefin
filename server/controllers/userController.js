@@ -1,12 +1,26 @@
+const session = require("express-session");
 const mysql = require("mysql");
 const bcrypt = require("bcryptjs");
+var fs = require("fs");
+var path = require("path");
+var db = JSON.parse(fs.readFileSync(path.join("./public","db.json"), "utf8"));
+var cliente = JSON.parse(fs.readFileSync(path.join("./public","cliente.json"), "utf8"));
+
+const mongoose = require("mongoose"); // para trabalhar com nossa database
+const Clientes = require("../models/Clientes");
+const { use } = require("../routes/routes");
+const mongo_db_uri = process.env.MONGO_DB_URI;
+const ObjectId = require("mongodb").ObjectId;
+
+mongoose.set("strictQuery", true);
+mongoose.connect(mongo_db_uri);
 
 // Connection Pool
 let connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
+  host: db.endpoint,
+  user: db.dbusername,
+  password: db.dbsenha,
+  database: db.dbname,
   port: process.env.DB_PORT,
   multipleStatements: true,
   waitForConnections: true,
@@ -23,7 +37,17 @@ let connection = mysql.createConnection({
 // View Users
 exports.view = async  (req, res) => {
   // User the connection
-  await connection.query(
+  try {
+    // const rows = Clientes.findAll( { nome: 'SPIG' } )
+    const rows = await Clientes.find({username: cliente.username}).sort( { nome: 1 } ).lean().exec()
+    // console.log(rows)
+  let removedUser = req.query.removed;
+  res.render("user", { rows, removedUser, session : req.session });
+} catch (e) {
+    console.log(e);
+    // res.render("user", { error: e.sqlMessage, session : req.session });
+  }
+/*   await connection.query(
     'SELECT * FROM user WHERE 1=1 AND status = "active" AND id > 0',
     (err, rows) => {
       // When done with the connection, release it
@@ -35,7 +59,7 @@ exports.view = async  (req, res) => {
       }
       console.log("The data from user table: \n", rows);
     }
-  );
+  ); */
   // connection.end();
 };
 
@@ -64,7 +88,7 @@ exports.form = async  (req, res) => {
 
 // Add new user
 exports.create = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, nome, dbname} = req.body;
   const emailRegexp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
@@ -80,6 +104,20 @@ exports.create = async (req, res) => {
 
   let cryptpassword = await bcrypt.hash(password, 8);
   console.log(password, cryptpassword);
+
+  try {
+    Clientes.insert(
+      { "username" : name, "senha" : cryptpassword, "nome" : nome, "dbname": dbname }
+    );
+    res.render("add-user", {
+      // rows,
+      alert: `Usuário ${name} adicionado com sucesso.`, session : req.session
+    });
+  } catch (e) {
+    console.log(e);
+    res.render("add-user", { error: err.sqlMessage, session : req.session });
+  }
+
 
   // verica se já existe
   await connection.query(
@@ -121,6 +159,14 @@ exports.create = async (req, res) => {
 
 // Edit user
 exports.edit = async  (req, res) => {
+  try {
+  const rows = [await Clientes.findOne({_id: req.params.id}).lean().exec()]
+  res.render("edit-user", { rows, session : req.session });
+  console.log(req.params.id, rows)
+} catch (e) {
+  res.render("user", { error: e, session : req.session });
+  console.log(e)
+}
   // User the connection
   await connection.query(
     "SELECT * FROM user WHERE 1=1 AND  id = ? AND status = 'active';",
@@ -150,15 +196,30 @@ exports.update = async  (req, res) => {
     !password ||
     password.length < 8
   ) {
-    res.render("edit-user", { error: "Favor preencher todos os campos", session : req.session });
+    res.render("edit-user", { error: "Favor preencher todos os campos corretamente", session : req.session });
     return;
   }
 
   let cryptpassword = await bcrypt.hash(password, 8);
-  // console.log(password, cryptpassword);
+   console.log(password, cryptpassword, req.params.id);
+
+  try {
+    const result = await Clientes.findOneAndUpdate(
+      { _id : ObjectId.createFromHexString(req.params.id) },
+      { senha : cryptpassword, nome : req.body.nome, dbname : req.body.dbname }, {new:true}
+    );
+    console.log(result)
+    res.render("edit-user", {
+      // rows,
+      alert: `${name} foi atualizado.`, session : req.session
+    });
+  } catch (e) {
+    console.log(e);
+    res.render("edit-user", { error: err.sqlMessage, session : req.session });
+  }
 
   // User the connection
-  await connection.query(
+  /* await connection.query(
     "SELECT * FROM user WHERE 1=1 AND status='active' AND name = ? AND id <> ?",
     [name, req.params.id],
     (err, rows) => {
@@ -191,7 +252,7 @@ exports.update = async  (req, res) => {
       }
       console.log("The data from user table: \n", rows);
     }
-  );
+  ); */
   // connection.end();
 };
 

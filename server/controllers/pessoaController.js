@@ -1,19 +1,20 @@
-const mysql = require("mysql");
-
-// Connection Pool
-let connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  multipleStatements: true,
-});
+const session = require("express-session");
 
 // View Pessoa
 exports.view = async (req, res) => {
+//  console.log(req.session)
   // pessoas the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     'SELECT * FROM pessoas WHERE 1=1 AND  status = "active" ORDER BY nome',
     (err, rows) => {
       // When done with the connection, release it
@@ -24,16 +25,27 @@ exports.view = async (req, res) => {
         res.render("pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
+      conn.release();
     }
   );
-  // await connection.end();
+})
 };
 
 // Find Pessoa by Search
 exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   // User the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+await conn.query(
     "SELECT * FROM pessoas WHERE 1=1 AND  nome LIKE ? ",
     ["%" + searchTerm + "%"],
     (err, rows) => {
@@ -43,8 +55,10 @@ exports.find = async (req, res) => {
         res.render("pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
+      conn.release();
     }
   );
+})
 };
 
 exports.form = async (req, res) => {
@@ -61,7 +75,17 @@ exports.create = async (req, res) => {
   }
 
   // verica se já existe
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+await conn.query(
     `SELECT * FROM pessoas WHERE 1=1 AND nome = ? AND status = "active";`,
     [nome],
     (err, rows) => {
@@ -71,7 +95,7 @@ exports.create = async (req, res) => {
           return;
         } else {
           // pessoas the connection
-          connection.query(
+          conn.query(
             "INSERT INTO pessoas SET nome = ?,  tipo = ?",
             [nome, tipo],
             (err, rows) => {
@@ -90,15 +114,26 @@ exports.create = async (req, res) => {
       } else {
         res.render("add-pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
+      conn.release();
     }
   );
-  // connection.end();
+})
 };
 
 // Edit pessoa
 exports.edit = async (req, res) => {
   // pessoas the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     "SELECT * FROM pessoas WHERE 1=1 AND id = ? AND status='active'",
     [req.params.id],
     (err, rows) => {
@@ -108,9 +143,10 @@ exports.edit = async (req, res) => {
         res.render("edit-pessoa", { rows, error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
-    }
+      conn.release()
+        }
   );
-  // connection.end();
+})
 };
 
 // Update Pessoa
@@ -123,7 +159,17 @@ exports.update = async (req, res) => {
   }
 
   // pessoas the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+await conn.query(
     "SELECT * FROM pessoas WHERE 1=1 AND id <> ? AND nome = ? AND status = 'active'",
     [req.params.id, nome],
     (err, rows) => {
@@ -136,7 +182,7 @@ exports.update = async (req, res) => {
           });
           return;
         } else {
-          connection.query(
+          conn.query(
             "UPDATE pessoas SET nome = ?, tipo = ? WHERE 1=1 AND  id = ? AND status = 'active'",
             [nome, tipo, req.params.id],
             (err, rows) => {
@@ -155,9 +201,10 @@ exports.update = async (req, res) => {
         res.render("edit-pessoa", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
+      conn.release()
     }
   );
-  // connection.end();
+})
 };
 
 // Delete Pessoa
@@ -179,7 +226,17 @@ exports.delete = async (req, res) => {
   // Hide a record
 
   // Veifica integridade
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     `SELECT COUNT(*) FROM lancamentos WHERE pes_id = ?;`,
     [req.params.id],
     (err, rows) => {
@@ -190,7 +247,7 @@ exports.delete = async (req, res) => {
           });
           return;
         } else {
-          connection.query(
+          conn.query(
             "SELECT nome FROM pessoas WHERE 1=1 AND  id = ?; UPDATE pessoas SET status = ? WHERE 1=1 AND  id = ?; ",
             [req.params.id, "removed", req.params.id],
             (err, rows) => {
@@ -213,15 +270,26 @@ exports.delete = async (req, res) => {
         });
       }
       console.log("The data from beer table are: \n", rows);
+      conn.release()
     }
   );
-  // connection.end();
+})
 };
 
 // View pessoas
 exports.viewall = async (req, res) => {
   // pessoas the connection
-  await connection.query(
+  const { pool } = require("../../db");
+
+  pool.getConnection(async function (err, conn) {
+    if (err) {
+      console.error("error connecting: " + err.stack);
+      return;
+    }
+
+    console.log("connected as id " + conn.threadId);
+
+  await conn.query(
     "SELECT * FROM pessoas WHERE 1=1 AND  id = ?",
     [req.params.id],
     (err, rows) => {
@@ -231,7 +299,8 @@ exports.viewall = async (req, res) => {
         res.render("view-pessoa", { error: err.sqlMessage, session : req.session });
       }
       console.log("The data from pessoas table: \n", rows);
+      conn.release()
     }
   );
-  // connection.end();
+})
 };

@@ -20,7 +20,7 @@
 {{/if}}
 
 {{#each rows}}
-<form class="row g-3 needs-validation" method="POST" action="/edituser/{{this.id}}" novalidate> 
+<form class="row g-3 needs-validation" method="POST" action="/edituser/{{this._id}}" novalidate> 
   {{> user-form}}
 </form>
 {{/each}}

@@ -1,13 +1,18 @@
 const mysqldump = require("mysqldump");
+var fs = require("fs");
+
+var path = require("path");
+var db = JSON.parse(fs.readFileSync(path.join("./public","db.json"), "utf8"));
+var cliente = JSON.parse(fs.readFileSync(path.join("./public","cliente.json"), "utf8"));
 
 exports.backup = async (req, res) => {
   // dump the result straight to a file
   result = await mysqldump({
     connection: {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
+      host: db.endpoint,
+      user: db.dbusername,
+      password: db.dbsenha,
+      database: db.dbname,
     },
     dumpToFile: `./${new Date()}.sql`,
   });

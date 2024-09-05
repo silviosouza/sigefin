@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true })); // New
 app.use(express.json()); // New
 
 // Static Files
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 
 // Templating Engine
 const handlebars = exphbs.create({ extname: '.hbs', });

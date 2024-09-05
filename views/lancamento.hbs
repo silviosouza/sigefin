@@ -1,8 +1,19 @@
-
-{{!-- <div class="fs-6"> --}}
+{{!-- < class="fs-6"> --}}
   {{#if removedLanca}}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
       Lançamento foi deletado.
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+  {{/if}}
+
+  {{#if alert}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{alert}}
       <button
         type="button"
         class="btn-close"
@@ -25,6 +36,11 @@
   {{/if}}
 
   {{!-- <p class="d-inline-flex gap-1"> --}}
+
+<div class="d-flex justify-content-evenly">
+  <h2>Lançamentos</h2>
+</div>
+
     <a
       class="btn btn-primary no-print"
       data-bs-toggle="collapse"
@@ -62,30 +78,39 @@
   </div>
 
   <div class="row">
-    <div class="col-9">
-      <h1>Lançamentos</h1>
-    </div>
-    <div class="col-1 d-flex justify-content-end">
+
+    <div class="d-flex justify-content-end gap-1">
       <a
         href="/addlanca"
         type="button"
         class="btn btn-primary align-self-center no-print"
       ><i class="bi bi-plus"></i></a>
-    </div>
-    <div class="col-2 d-flex justify-content-end">
+    {{!-- </div>
+    <div class="d-flex justify-content-evenly"> --}}
       <button
         title="Imprime o que está na tela"
         id="btnprint"
         type="submit"
         class="btn btn-primary align-self-center no-print"
       ><i class="bi bi-printer"></i> </button>
-    </div>
+    {{!-- </div>
+    <div class="d-flex justify-content-evenly"> --}}
+      <button
+        title="Baixar todos os lançamentos"
+        id="btnbaixaall"
+        type="submit"
+        class="btn btn-primary align-self-center no-print"
+        data-rota="/baixarlancaall"
+        disabled
+      ><i class="bi bi-cash"></i> </button>
+    {{!-- </div> --}}
   </div>
 
-  <div class="table-responsive-sm">
+  <div class="table-responsive-sm mt-1">
     <table class="table table-bordered table-striped">
       <thead class="thead-dark">
         <tr>
+          <th scope="col"><input type="checkbox" name="all">{{!-- <i class="bi bi-check2-square"> --}}</i></th>
           <th scope="col">#</th>
           <th scope="col">Tp</th>
           <th scope="col">Categoria</th>
@@ -94,6 +119,7 @@
           <th scope="col" class="text-end">Valor do Lançamento</th>
           <th scope="col">Emissão</th>
           <th scope="col">Vencimento</th>
+          <th scope="col">Dias</th>
           <th scope="col">Quitado em</th>
           <th scope="col">Banco</th>
           <th scope="col">Operação</th>
@@ -105,7 +131,12 @@
       <tbody>
 
         {{#each rows}}
-          <tr>
+          {{#if lanca_state}}
+            <tr class="{{this.lanca_state}}">
+              {{else}}
+            <tr>
+          {{/if}}
+            <td><input type="checkbox" id="{{this.id}}" onclick="clica_checkbox(this)"></td>
             <th scope="row">{{this.id}}</th>
             <td>{{this.tipo}}</td>
             <td>{{this.nome_categoria}}</td>
@@ -114,6 +145,7 @@
             <td class="text-end">{{this.fvalor}}</td>
             <td>{{this.emissao}}</td>
             <td>{{this.vencimento_em}}</td>
+            <td>{{this.dias}}</td>
             <td>{{this.pago_em}}</td>
             <td>{{this.nome_banco}}</td>
             <td>{{this.descricao_ope}}</td>
@@ -139,6 +171,7 @@
               </a>
             </td>
           </tr>
+
         {{/each}}
 
       </tbody>
@@ -247,5 +280,72 @@
   elBtnPrint.addEventListener("click", function(){
   window.print();
   });
+
+  var lista_id = lista_checked_id = []
+
+
+  function clica_checkbox(elemento) {
+    if (elemento.checked) {
+      lista_id.push(elemento.id)
+    } else {
+      lista_id = lista_id.filter((x) => x !== elemento.id)
+    }
+    btn = document.getElementById('btnbaixaall')
+    btn.disabled = !(lista_id.length > 0) 
+    {{!-- console.log(lista_id.length, btn) --}}
+  }
+
+  document.querySelector("input[name=all]").onclick = function() {
+    var lista = document.querySelectorAll("input[type=checkbox]:not([name=all])");
+    for ( var i = 0 ; i < lista.length ; i++ ) {
+        lista[i].checked = lista[i].checked ? false : true;
+        if(lista[i].checked) {
+          lista_id.push(lista[i].id)
+          } else {
+            lista_id = lista_id.filter((x) => x !== lista[i].id)
+            }
+        
+    }
+    document.getElementById('btnbaixaall').disabled = !(lista_id.length > 0) 
+  {{!-- console.log(lista_id) --}}
+  };
+
+  document.getElementById("btnbaixaall").addEventListener('click', () => {
+    var lista_checked = document.querySelectorAll("input[type=checkbox]:not([name=all])");
+    lista_checked_id = []
+    for ( var i = 0 ; i < lista_checked.length ; i++ ) {
+        if(lista_checked[i].checked)
+          lista_checked_id.push(lista_checked[i].id)
+    }
+
+    {{!-- console.log(">>>>>> lista_checked >>>>>>>>")
+    console.log(lista_checked)
+
+    console.log("lista_checked_id >>>>>>>>")
+    console.log(lista_checked_id) --}} 
+
+    let text = `Confirma baixar todos os lançamentos selecionados [${lista_checked_id}]?\n OK ou Cancelar.`;
+
+   if (confirm(text) == true) {
+
+    fetch("/baixarlancaall", {
+      method: "post",
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+
+      //make sure to serialize your JSON body
+      body: JSON.stringify({
+        lista_checked_id
+      })
+    })
+    .then( (response) => { 
+      //do something awesome that makes the world a better place
+    });
+  } else {
+    text = "You canceled!";
+  }
+})
 
 </script>

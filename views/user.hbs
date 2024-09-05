@@ -38,6 +38,8 @@
       <th scope="col">#</th>
       <th scope="col">Nome</th>
       <th scope="col">Email</th>
+      <th scope="col">Empresa</th>
+      <th scope="col">Bnaco de dados</th>
       <th scope="col" class="text-end">Ação</th>
     </tr>
   </thead>
@@ -45,17 +47,19 @@
 
     {{#each rows}}
       <tr>
-        <th scope="row">{{this.id}}</th>
-        <td>{{this.name}}</td>
+        <th scope="row">{{this._id}}</th>
+        <td>{{this.username}}</td>
         <td>{{this.email}}</td>
+        <td>{{this.nome}}</td>
+        <td>{{this.dbname}}</td>
         <td class="text-end">
           <a
-            href="/viewuser/{{this.id}}"
+            href="/viewuser/{{this._id}}"
             type="button"
             class="btn btn-light btn-sm"
           ><i class="bi bi-eye"></i> Ver</a>
           <a
-            href="/edituser/{{this.id}}"
+            href="/edituser/{{this._id}}"
             type="button"
             class="btn btn-light btn-sm"
           ><i class="bi bi-pencil"></i>
