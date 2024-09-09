@@ -46,4 +46,4 @@ const path = require('path');
 app.use('/', routes);
 app.use('/auth', require('./server/routes/auth.js'))
 
-app.listen(port, () => console.log(`Listening on port ${port}`,process.env.NODE_ENV));
+app.listen(port, () => console.log(`Listening on port ${port}`));
