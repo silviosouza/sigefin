@@ -1,3 +1,5 @@
+require('dotenv').config();
+const session = require("express-session");
 const express = require("express");
 const authController = require("../controllers/auth");
 const router = express.Router();
@@ -76,16 +78,16 @@ router.post("/editope/:id", opeController.update);
 router.get("/viewope/:id", opeController.viewall);
 router.get("/delope/:id", opeController.delete);
 
-router.get("/backup", suporteController.backup);
+router.get("/backup", authController.isLoggedIn, suporteController.backup);
 
 router.get("/", (req, res, next) => {
   // var fs = require("fs");
   // var db = JSON.parse(fs.readFileSync("./db.json", "utf8"));
 
-  // console.log(req.user);
+  // console.log(req.session, process.env.NOME_EMPRESA);
   res.render("home", {
     user: req.user,
-    dbName: process.env.NOME_EMPRESA,
+//    dbName: process.env.NOME_EMPRESA || req.session.dbname,
     session: req.session,
   });
 });

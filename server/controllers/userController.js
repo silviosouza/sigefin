@@ -1,67 +1,30 @@
 require('dotenv').config();
 const session = require("express-session");
-const mysql = require("mysql");
 const bcrypt = require("bcryptjs");
 var fs = require("fs");
 var path = require("path");
-var db = JSON.parse(fs.readFileSync(path.join("./public","db.json"), "utf8"));
-var cliente = JSON.parse(fs.readFileSync(path.join("./public","cliente.json"), "utf8"));
 
 const mongoose = require("mongoose"); // para trabalhar com nossa database
 const Clientes = require("../models/Clientes");
-const { use } = require("../routes/routes");
+// const { use } = require("../routes/routes");
 const mongo_db_uri = process.env.MONGO_DB_URI;
 const ObjectId = require("mongodb").ObjectId;
 
 mongoose.set("strictQuery", true);
 mongoose.connect(mongo_db_uri);
 
-// Connection Pool
-let connection = mysql.createConnection({
-  host: db.endpoint,
-  user: db.dbusername,
-  password: db.dbsenha,
-  database: db.dbname,
-  port: process.env.DB_PORT,
-  multipleStatements: true,
-  waitForConnections: true,
-  connectionLimit: 10,
-  maxIdle: 10, // Máximo de conexões inativas; o valor padrão é o mesmo que "connectionLimit"
-  idleTimeout: 60000, // Tempo limite das conexões inativas em milissegundos; o valor padrão é "60000"
-  queueLimit: 0,
-  enableKeepAlive: true,
-  keepAliveInitialDelay: 0,
-  connectTimeout: 60000
-});
-
-
 // View Users
 exports.view = async  (req, res) => {
+  var cliente = JSON.parse(fs.readFileSync(path.join("./public",`${req.session.user_id}.json`), "utf8"));
   // User the connection
   try {
-    // const rows = Clientes.findAll( { nome: 'SPIG' } )
-    const rows = await Clientes.find({username: cliente.username}).sort( { nome: 1 } ).lean().exec()
-    // console.log(rows)
+    console.log(req.session)
+    const rows = await Clientes.find({_id: req.session.user_id}).lean().exec()
   let removedUser = req.query.removed;
   res.render("user", { rows, removedUser, session : req.session });
 } catch (e) {
     console.log(e);
-    // res.render("user", { error: e.sqlMessage, session : req.session });
   }
-/*   await connection.query(
-    'SELECT * FROM user WHERE 1=1 AND status = "active" AND id > 0',
-    (err, rows) => {
-      // When done with the connection, release it
-      if (!err) {
-        let removedUser = req.query.removed;
-        res.render("user", { rows, removedUser, session : req.session });
-      } else {
-        res.render("user", { error: err.sqlMessage, session : req.session });
-      }
-      console.log("The data from user table: \n", rows);
-    }
-  ); */
-  // connection.end();
 };
 
 // Find User by Search

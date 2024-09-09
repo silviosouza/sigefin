@@ -3,7 +3,13 @@ const session = require("express-session");
 // View Categoria
 exports.view = async (req, res) => {
   // Categorias the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -34,7 +40,13 @@ exports.view = async (req, res) => {
 exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   // User the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -74,7 +86,13 @@ exports.create = async (req, res) => {
   }
 
   // verica se já existe
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -121,7 +139,13 @@ await conn.query(
 // Edit categoria
 exports.edit = async (req, res) => {
   // Categorias the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -157,7 +181,13 @@ exports.update = async (req, res) => {
   }
 
   // Categorias the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -231,7 +261,13 @@ exports.delete = async (req, res) => {
   // Hide a record
 
   // Veifica integridade
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -285,7 +321,13 @@ await conn.query(
 // View Categorias
 exports.viewall = async (req, res) => {
   // Categorias the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {

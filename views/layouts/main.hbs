@@ -39,7 +39,7 @@
       class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top bg-body-tertiary mb-1 no-print"
     >
       <div class="container-fluid">
-        <a class="navbar-brand" href="/">GestorFinanceiro<br/><span id="empresa" style="color:snow;font-size:xx-small;font-weight:bold">{{dbName}}</span></a>
+        <a class="navbar-brand" href="/">GestorFinanceiro<br/><span id="empresa" style="color:snow;font-size:xx-small;font-weight:bold">{{session.dbname}}</span></a>
         <button
           class="navbar-toggler"
           type="button"
@@ -257,9 +257,9 @@
 
   <script>
 
-    fetch("cliente.json")
+    {{!-- fetch("cliente.json")
     .then( response => response.json())
-    .then( json => document.getElementById("empresa").innerHTML = json.empresa);
+    .then( json => document.getElementById("empresa").innerHTML = json.empresa); --}}
 
     {{!-- cliente = JSON.parse(cliente) --}}
 

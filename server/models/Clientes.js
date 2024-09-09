@@ -1,11 +1,11 @@
 // importando os packages que precisamos
-require('dotenv').config();
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 // const bcrypt = require('bcryptjs')
 
 // schema
 const ClientesSchema = new Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   dbname: String,
   username: String,
   senha: String,

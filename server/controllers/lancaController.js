@@ -1,4 +1,5 @@
 const session = require("express-session");
+const moment = require("moment");
 const path = require("path");
 
 let currentRec;
@@ -7,7 +8,13 @@ let total = 0;
 // View Lanca
 exports.view = async (req, res) => {
   // lancamentos the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
+
+  if(!pool) {
+    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -151,7 +158,9 @@ exports.find = async (req, res) => {
   // console.log(req.body);
 
   // User the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   const qry = `SELECT * FROM categorias WHERE 1=1 AND status='active' ORDER BY descricao;
   SELECT * FROM pessoas WHERE 1=1 AND status='active' ORDER BY nome;
@@ -242,7 +251,9 @@ exports.form = async (req, res) => {
   var catrows, pesrows, banrows, operows;
   let arLanca = new Object();
 
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -322,7 +333,7 @@ exports.create = async (req, res) => {
   } = req.body;
 
   let tipo_RD = tipo == "on" ? "D" : "R";
-  let vencimentoEm = vencimento_em == "" ? null : vencimento_em;
+  let vencimentoEm = vencimento_em == "" ? moment( new Date(), "YYYY-MM-DD").format("YYYY-MM-DD") : vencimento_em;
   let id_origem = origem_id == "" ? 0 : origem_id;
   let pagoEm = operacao === 2 ? null : new Date ;
 
@@ -350,7 +361,9 @@ exports.create = async (req, res) => {
   // console.log(tipo, vencimentoEm, Date(), qryBanco);
 
   // lancamentos the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -394,9 +407,11 @@ exports.create = async (req, res) => {
 // Edit lancamento
 exports.edit = async (req, res) => {
   let arLanca = new Object();
-  console.log("antes da query");
+
   // lancamentos the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -499,7 +514,9 @@ exports.update = async (req, res) => {
   }
 
   // lancamentos the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -591,7 +608,9 @@ exports.delete = async (req, res) => {
 
   // Hide a record
   // console.log(req.query, req.params, req.body);
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -640,7 +659,9 @@ exports.delete = async (req, res) => {
 // View lancamentos
 exports.viewall = async (req, res) => {
   // lancamentos the connection
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -684,8 +705,10 @@ exports.baixar = async (req, res) => {
   valor = parseFloat(req.query.v.replace(",", "."));
   // console.log(tipo, req.query.v, req.query.b, !pago);
   if (!pago) {
-    const { pool } = require("../../db");
+    const { fpool } = require("../../db");
 
+    const pool = await fpool(req.session.user_id)
+  
     pool.getConnection(async function (err, conn) {
       if (err) {
         console.error("error connecting: " + err.stack);
@@ -723,15 +746,17 @@ exports.baixar = async (req, res) => {
 exports.baixarlancaall = async (req, res) => {
   const { lista_checked_id } = req.body;
   let pago_em, ope_id, banco_id, valor, tipo, arrResult = [];
-  console.log(lista_checked_id);
+
   if (!lista_checked_id) {
     res.render("lancamento", {
       error: "Lista de Lançamentos não informada",
       session: req.session,
     });
   } else {
-    const { pool } = require("../../db");
+    const { fpool } = require("../../db");
 
+    const pool = await fpool(req.session.user_id)
+  
     pool.getConnection(async function (err, conn) {
       if (err) {
         console.error("error connecting: " + err.stack);
@@ -930,7 +955,9 @@ exports.print = async (req, res) => {
   ORDER BY ${orderTerm};
   `;
 
-  const { pool } = require("../../db");
+  const { fpool } = require("../../db");
+
+  const pool = await fpool(req.session.user_id)
 
   pool.getConnection(async function (err, conn) {
     if (err) {

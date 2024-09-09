@@ -2,22 +2,11 @@ const mysql = require("mysql");
 var fs = require("fs");
 
 var path = require("path");
-var db = JSON.parse(fs.readFileSync(path.join("./public","db.json"), "utf8"));
-var cliente = JSON.parse(fs.readFileSync(path.join("./public","cliente.json"), "utf8"));
-
-// Connection Pool
-let connection = mysql.createConnection({
-  host: db.endpoint,
-  user: db.dbusername,
-  password: db.dbsenha,
-  database: db.dbname,
-  port: process.env.DB_PORT,
-  multipleStatements: true,
-});
 
 // View Banco
 exports.view = (req, res) => {
   // operacoes the connection
+  var cliente = JSON.parse(fs.readFileSync(path.join("./public","cliente.json"), "utf8"));
   connection.query(
     'SELECT id, descricao FROM operacoes WHERE 1=1 AND status = "active" ORDER BY descricao',
     (err, rows) => {
