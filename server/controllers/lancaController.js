@@ -10,10 +10,13 @@ exports.view = async (req, res) => {
   // lancamentos the connection
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
 
-  if(!pool) {
-    res.render("lancamento", {error: `Erro: 500 Internal Server Error !`})
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
   }
 
   pool.getConnection(async function (err, conn) {
@@ -102,16 +105,19 @@ exports.find = async (req, res) => {
   let searchTerm = req.body.search;
   let orderTerm = req.body.inlineRadioOptions1; //"lan." +
   let directTerm = req.body.inlineRadioOptions2;
-  let filterTipo = req.body.inlineRadioOptionsT === 'T'
-    ? ""
-    : `AND lan.tipo = "${req.body.inlineRadioOptionsT}"`;
+  let filterTipo =
+    req.body.inlineRadioOptionsT === "T"
+      ? ""
+      : `AND lan.tipo = "${req.body.inlineRadioOptionsT}"`;
 
-    let filterSit = req.body.inlineRadioOptionsS === 'T'
-    ? "" 
-    : req.body.inlineRadioOptionsS === 'A' ? "AND lan.pago_em is null"
-    : `AND lan.pago_em is not null`;
+  let filterSit =
+    req.body.inlineRadioOptionsS === "T"
+      ? ""
+      : req.body.inlineRadioOptionsS === "A"
+      ? "AND lan.pago_em is null"
+      : `AND lan.pago_em is not null`;
 
-    // console.log(orderTerm, directTerm)
+  // console.log(orderTerm, directTerm)
 
   let _filterCat =
     !req.body.filterCat || req.body.filterCat == 0
@@ -155,12 +161,25 @@ exports.find = async (req, res) => {
       ? ``
       : `AND ${dfiltro} BETWEEN '${req.body.dtinicial}' AND '${req.body.dtfinal}'`;
 
-  // console.log(req.body);
+  let orderTerms = orderTerm.split(",");
+  orderTerm = orderTerms[0].padEnd(orderTerms[0].length + 5, " " + directTerm);
+    
+  orderTerms.shift();
+
+  orderTerm += "," + orderTerms;
+      console.log(orderTerm);
 
   // User the connection
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   const qry = `SELECT * FROM categorias WHERE 1=1 AND status='active' ORDER BY descricao;
   SELECT * FROM pessoas WHERE 1=1 AND status='active' ORDER BY nome;
@@ -185,6 +204,13 @@ exports.find = async (req, res) => {
   ${wherefiltro}
   ORDER BY ${orderTerm} ${directTerm};
   `;
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -253,9 +279,18 @@ exports.form = async (req, res) => {
 
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
 
-  pool.getConnection(async function (err, conn) {
+  if (!pool) {
+    console.log("  if(!pool) {" + pool);
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+    return;
+  }
+
+  await pool.getConnection(async function (err, conn) {
     if (err) {
       console.error("error connecting: " + err.stack);
       return conn;
@@ -333,9 +368,12 @@ exports.create = async (req, res) => {
   } = req.body;
 
   let tipo_RD = tipo == "on" ? "D" : "R";
-  let vencimentoEm = vencimento_em == "" ? moment( new Date(), "YYYY-MM-DD").format("YYYY-MM-DD") : vencimento_em;
+  let vencimentoEm =
+    vencimento_em == ""
+      ? moment(new Date(), "YYYY-MM-DD").format("YYYY-MM-DD")
+      : vencimento_em;
   let id_origem = origem_id == "" ? 0 : origem_id;
-  let pagoEm = operacao === 2 ? null : new Date ;
+  let pagoEm = operacao === 2 ? null : new Date();
 
   if (
     !tipo ||
@@ -363,7 +401,14 @@ exports.create = async (req, res) => {
   // lancamentos the connection
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -374,8 +419,10 @@ exports.create = async (req, res) => {
     console.log("connected as id " + conn.threadId);
 
     await conn.query(
-      `INSERT INTO lancamentos SET tipo = ?, cat_id = ?, pes_id = ?, banco_id = ?, ope_id = ?,
-    valor = ?, vencimento_em = ?, descricao = ?, id_origem = ?, pago_em = CASE WHEN 1 = ${operacao} THEN NOW() ELSE null END; ${qryBanco}`,
+      `INSERT INTO lancamentos SET tipo = ?, cat_id = ?, pes_id = ?, banco_id = ?, 
+      ope_id = ?, valor = ?, vencimento_em = ?, descricao = ?, id_origem = ?, 
+      pago_em = CASE WHEN 1 = ${operacao} THEN NOW() ELSE null END, 
+      saldo_anterior = (SELECT saldo FROM bancos WHERE id = ?); ${qryBanco}`,
       [
         tipo,
         categoria,
@@ -387,6 +434,7 @@ exports.create = async (req, res) => {
         vencimentoEm,
         descricao,
         id_origem,
+        banco
       ],
       (err, rows) => {
         if (!err) {
@@ -411,7 +459,14 @@ exports.edit = async (req, res) => {
   // lancamentos the connection
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -516,7 +571,14 @@ exports.update = async (req, res) => {
   // lancamentos the connection
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -538,7 +600,8 @@ exports.update = async (req, res) => {
     ope_id = ?, 
     vencimento_em = ?, 
     valor = ?, 
-    id_origem = ? 
+    id_origem = ?, 
+    saldo_anterior = (SELECT saldo FROM bancos WHERE id = ?)
     WHERE id = ? 
     AND status = 'active';
     ${qryBanco}
@@ -554,6 +617,7 @@ exports.update = async (req, res) => {
         vencimentoEm,
         valor,
         id_origem,
+        banco,
         req.params.id,
       ],
       (err, rows) => {
@@ -610,7 +674,14 @@ exports.delete = async (req, res) => {
   // console.log(req.query, req.params, req.body);
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -631,8 +702,11 @@ exports.delete = async (req, res) => {
           lin = rows[0];
           mathOper = lin.tipo === "R" ? "-" : "+";
           conn.query(
-            `start transaction; UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${mathOper} ? WHERE id = ?; UPDATE lancamentos SET status = ? WHERE id = ?; commit;`,
-            [lin.valor, lin.banco_id, "removed", req.params.id],
+            `start transaction; UPDATE lancamentos SET status = ?, 
+              saldo_anterior = (SELECT saldo FROM bancos WHERE id = ? WHERE id = ?);
+             UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${mathOper} ? WHERE id = ? ; 
+             commit;`,
+            ["removed", lin.banco_id, req.params.id, lin.valor, lin.banco_id],
             (err, rows) => {
               if (!err) {
                 // console.log("The res from delete lancamentos table: \n", res);
@@ -661,7 +735,14 @@ exports.viewall = async (req, res) => {
   // lancamentos the connection
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {
@@ -707,8 +788,15 @@ exports.baixar = async (req, res) => {
   if (!pago) {
     const { fpool } = require("../../db");
 
-    const pool = await fpool(req.session.user_id)
-  
+    const pool = await fpool(req.session.user_id);
+
+    if (!pool) {
+      res.render("lancamento", {
+        error: `Erro: 500 Internal Server Error !`,
+        session: req.session,
+      });
+    }
+
     pool.getConnection(async function (err, conn) {
       if (err) {
         console.error("error connecting: " + err.stack);
@@ -718,9 +806,11 @@ exports.baixar = async (req, res) => {
       console.log("connected as id " + conn.threadId);
 
       await conn.query(
-        `START TRANSACTION; UPDATE lancamentos SET pago_em = NOW() WHERE 1=1 AND status='active' AND id=?; 
+        `START TRANSACTION; UPDATE lancamentos SET pago_em = NOW(), 
+        saldo_anterior = (SELECT saldo FROM bancos WHERE id = ?)  
+        WHERE 1=1 AND status='active' AND id=?; 
         UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${tipo} ${valor} WHERE id = ${req.query.b}; COMMIT;`,
-        [req.params.id],
+        [req.query.b, req.params.id],
         (err, rows) => {
           if (!err) {
             res.render("view-lancamento", {
@@ -745,9 +835,14 @@ exports.baixar = async (req, res) => {
 
 exports.baixarlancaall = async (req, res) => {
   const { lista_checked_id } = req.body;
-  let pago_em, ope_id, banco_id, valor, tipo, arrResult = [];
+  let pago_em,
+    ope_id,
+    banco_id,
+    valor,
+    tipo,
+    arrResult = [];
 
-  if (!lista_checked_id) {
+    if (!lista_checked_id) {
     res.render("lancamento", {
       error: "Lista de Lançamentos não informada",
       session: req.session,
@@ -755,9 +850,16 @@ exports.baixarlancaall = async (req, res) => {
   } else {
     const { fpool } = require("../../db");
 
-    const pool = await fpool(req.session.user_id)
-  
-    pool.getConnection(async function (err, conn) {
+    const pool = await fpool(req.session.user_id);
+
+    if (!pool) {
+      res.render("lancamento", {
+        error: `Erro: 500 Internal Server Error !`,
+        session: req.session,
+      });
+    }
+
+    await pool.getConnection(async function (err, conn) {
       if (err) {
         console.error("error connecting: " + err.stack);
         return conn;
@@ -782,21 +884,28 @@ exports.baixarlancaall = async (req, res) => {
               // tipo = linhas[0].tipo
               console.log(pago_em, ope_id, tipo, banco_id, valor, element);
 
-              if ((ope_id === 2) && ( (pago_em === '  /  /    ') || (pago_em === null) )) {
+              if (
+                ope_id === 2 &&
+                (pago_em === "  /  /    " || pago_em === null)
+              ) {
                 conn.query(
-                  `START TRANSACTION; UPDATE lancamentos SET pago_em = NOW() WHERE 1=1 AND status='active' AND id=?; 
+                  `START TRANSACTION; UPDATE lancamentos SET pago_em = NOW(),
+                    saldo_anterior = (SELECT saldo FROM bancos WHERE id = ?)  
+                   WHERE 1=1 AND status='active' AND id=? AND pago_em is null; 
                     UPDATE bancos SET saldo_anterior = saldo, saldo = saldo ${tipo} ${valor} WHERE id = ${banco_id}; COMMIT;`,
-                  [element],
+                  [banco_id, element],
                   (err, rows) => {
                     if (!err) {
-                      arrResult.push("Ok")
+                      if(rows[0].changedRows > 0)
+                        arrResult.push("Ok");
                     } else {
-                      arrResult.push(err.message)
+                      arrResult.push(err.message);
                       console.log(err);
                     }
                     console.log(
                       "The data from baixar lancamentos table: \n",
-                      rows, arrResult
+                      rows,
+                      arrResult
                     );
                   }
                 );
@@ -811,7 +920,7 @@ exports.baixarlancaall = async (req, res) => {
       conn.release();
     });
 
-    res.render("lancamento", {
+    res.render("banco", {
       alert: `Lançamentos baixados com sucesso > ${lista_checked_id}`,
       session: req.session,
     });
@@ -828,14 +937,17 @@ exports.print = async (req, res) => {
   let searchTerm = req.body.search;
   let orderTerm = req.body.inlineRadioOptions1; //"lan." +
   let directTerm = req.body.inlineRadioOptions2;
-  let filterTipo = req.body.inlineRadioOptionsT === 'T'
-    ? ""
-    : `AND lan.tipo = "${req.body.inlineRadioOptionsT}"`;
+  let filterTipo =
+    req.body.inlineRadioOptionsT === "T"
+      ? ""
+      : `AND lan.tipo = "${req.body.inlineRadioOptionsT}"`;
 
-  let filterSit = req.body.inlineRadioOptionsS === 'T'
-    ? "" 
-    : req.body.inlineRadioOptionsS === 'A' ? "AND lan.pago_em is null"
-    : `AND lan.pago_em is not null`;
+  let filterSit =
+    req.body.inlineRadioOptionsS === "T"
+      ? ""
+      : req.body.inlineRadioOptionsS === "A"
+      ? "AND lan.pago_em is null"
+      : `AND lan.pago_em is not null`;
 
   let _filterCat =
     !req.body.filterCat || req.body.filterCat == 0
@@ -957,7 +1069,14 @@ exports.print = async (req, res) => {
 
   const { fpool } = require("../../db");
 
-  const pool = await fpool(req.session.user_id)
+  const pool = await fpool(req.session.user_id);
+
+  if (!pool) {
+    res.render("lancamento", {
+      error: `Erro: 500 Internal Server Error !`,
+      session: req.session,
+    });
+  }
 
   pool.getConnection(async function (err, conn) {
     if (err) {

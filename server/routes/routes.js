@@ -18,24 +18,24 @@ router.get("/lanca", authController.isLoggedIn, lancaController.view);
 router.post("/lanca", authController.isLoggedIn, lancaController.find);
 router.get("/addlanca", lancaController.form);
 router.post("/addlanca", lancaController.create);
-router.get("/editlanca/:id", lancaController.edit);
+router.get("/editlanca/:id", authController.isLoggedIn, lancaController.edit);
 router.post("/editlanca/:id", lancaController.update);
-router.get("/viewlanca/:id", lancaController.viewall);
+router.get("/viewlanca/:id", authController.isLoggedIn, lancaController.viewall);
 router.get("/dellanca/:id", lancaController.delete);
 router.get("/baixarlanca/:id", lancaController.baixar);
 router.get("/rellancamentos", authController.isLoggedIn, lancaController.rellancamentos);
 router.post("/rellancamentos", lancaController.print);
 router.post("/print", lancaController.print);
-router.post("/baixarlancaall", lancaController.baixarlancaall);
+router.post("/baixarlancaall", authController.isLoggedIn, lancaController.baixarlancaall);
 
 // Bancos
 router.get("/banco", authController.isLoggedIn, bancoController.view);
 router.post("/banco", bancoController.find);
 router.get("/addbanco", bancoController.form);
 router.post("/addbanco", bancoController.create);
-router.get("/editbanco/:id", bancoController.edit);
+router.get("/editbanco/:id", authController.isLoggedIn, bancoController.edit);
 router.post("/editbanco/:id", bancoController.update);
-router.get("/viewbanco/:id", bancoController.viewall);
+router.get("/viewbanco/:id", authController.isLoggedIn, bancoController.viewall);
 router.get("/delbanco/:id", bancoController.delete);
 
 // Categorias
@@ -43,9 +43,9 @@ router.get("/categoria", authController.isLoggedIn, categoriaController.view);
 router.post("/categoria", categoriaController.find);
 router.get("/addcategoria", categoriaController.form);
 router.post("/addcategoria", categoriaController.create);
-router.get("/editcategoria/:id", categoriaController.edit);
+router.get("/editcategoria/:id", authController.isLoggedIn, categoriaController.edit);
 router.post("/editcategoria/:id", categoriaController.update);
-router.get("/viewcategoria/:id", categoriaController.viewall);
+router.get("/viewcategoria/:id", authController.isLoggedIn, categoriaController.viewall);
 router.get("/delcategoria/:id", categoriaController.delete);
 
 // Pessoas
@@ -53,18 +53,18 @@ router.get("/pessoa", authController.isLoggedIn, pessoaController.view);
 router.post("/pessoa", pessoaController.find);
 router.get("/addpessoa", pessoaController.form);
 router.post("/addpessoa", pessoaController.create);
-router.get("/editpessoa/:id", pessoaController.edit);
+router.get("/editpessoa/:id", authController.isLoggedIn, pessoaController.edit);
 router.post("/editpessoa/:id", pessoaController.update);
-router.get("/viewpessoa/:id", pessoaController.viewall);
+router.get("/viewpessoa/:id", authController.isLoggedIn, pessoaController.viewall);
 router.get("/delpessoa/:id", pessoaController.delete);
 
 router.get("/user", authController.isLoggedIn, userController.view);
 router.post("/user", userController.find);
 router.get("/adduser", userController.form);
 router.post("/adduser", userController.create);
-router.get("/edituser/:id", userController.edit);
+router.get("/edituser/:id", authController.isLoggedIn, userController.edit);
 router.post("/edituser/:id", userController.update);
-router.get("/viewuser/:id", userController.viewall);
+router.get("/viewuser/:id", authController.isLoggedIn, userController.viewall);
 router.get("/deluser/:id", userController.delete);
 // router.post('/login',authController.login);
 

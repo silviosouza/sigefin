@@ -13,33 +13,39 @@ mongoose.connect(process.env.MONGO_DB_URI);
 
 // Connection Pool
 const fpool = async (user_id) => {
+  if (!user_id) {
+    return false;
+  }
   // const clientes = await Clientes.findOne({ _id : ObjectId.createFromHexString(user_id) });
   try {
     const clientes = await Clientes.findOne({ _id: user_id }).lean().exec();
 
-    // console.log(user_id,clientes)
+    if (!clientes) {
+      return false;
+    }
 
-    pool = mysql.createPool({
+    const pool = mysql.createPool({
       host: clientes.endpoint,
       user: clientes.dbusername,
       password: clientes.dbsenha,
       database: clientes.dbname, //process.env.DB_NAME,
       port: process.env.DB_PORT,
-      multipleStatements: true,
       waitForConnections: true,
       connectionLimit: 10,
-      maxIdle: 10, // Máximo de conexões inativas; o valor padrão é o mesmo que "connectionLimit"
-      idleTimeout: 60000, // Tempo limite das conexões inativas em milissegundos; o valor padrão é "60000"
+      maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
+      idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
       queueLimit: 0,
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
-      connectTimeout: 60000,
+      multipleStatements: true,
     });
+    // console.log(clientes, pool)
+
     return pool;
   } catch (e) {
-    console.log(">>>>>>>>>>>>>>>>>> e", clientes, e.message);
-    console.log(e);
-    return e.message;
+    console.log("errrrrrrrrroororororororororo");
+    console.log(e.message);
+    return false;
   }
 };
 
